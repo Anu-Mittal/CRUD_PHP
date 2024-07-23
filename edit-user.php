@@ -23,6 +23,9 @@ $state = $row['state'];
 
 $city = $row['city'];
 $password = $row['password'];
+if($role!= 1  && $role != 5){
+  header("Location:dashboard.php");
+}
 // $retype=$row['retype'];
 
 

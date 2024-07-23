@@ -13,14 +13,7 @@ $password = '';
 $id='';
 
 $firstname = '';
-$lastname = '';
-$email = '';
-$mobile = '';
-$gender = '';
-$role = '';
-$country = '';
-$state = '';
-$city = '';
+
 
 $errors = [];
 if (isset($_POST['submit'])) {
@@ -42,7 +35,7 @@ if (isset($_POST['submit'])) {
 
   if (empty($errors)) {
 
-    $sql = "SELECT Id,firstname,lastname,mobile,gender,role_id,country,state,city,email,password from `employees` where email='$email'";
+    $sql = "SELECT Id,firstname,email,password from `employees` where email='$email'";
     $result = mysqli_query($con, $sql);
 
     if ($result) {
@@ -53,8 +46,10 @@ if (isset($_POST['submit'])) {
 
           $login = true;
           $_SESSION['loggedIn'] = true;
-          $_SESSION['email'] = $email;
-          $_SESSION['Id']=$id;
+          $_SESSION['email'] = $row['email'];
+          $_SESSION['password']=$row['password'];
+          $_SESSION['id']=$row['Id'];
+          $_SESSION['firstname']=$row['firstname'];
         
 
           if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {

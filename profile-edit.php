@@ -1,12 +1,78 @@
 <?php
+include 'connect.php';
+
 session_start();
 if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
   header('Location:login.php');
+
   exit;
+}
+$email = $_SESSION['email'];
+
+$image_path = null;
+$id = $_SESSION['id'];
+$sql = "SELECT employees.Id,firstname,lastname,email,gender,country,Countries.countrynames,state,States.statenames,city,Cities.citynames,mobile,roles.role,image FROM `employees` left join roles on roles.id=employees.role_id left join Countries on employees.country=Countries.id left join States on employees.state=States.id left join Cities on employees.city=Cities.id where isDeleted=0 and employees.Id=$id";
+$result = mysqli_query($con, $sql);
+$row = mysqli_fetch_assoc($result);
+$firstname = $row['firstname'];
+$lastname = $row['lastname'];
+// $email = $row['email'];
+$mobile = $row['mobile'];
+$gender = $row['gender'];
+$country = $row['countrynames'];
+// $get_country = "select * from Countries where id=$country";
+//         $result =  mysqli_query($con, $get_country);
+//         $row = mysqli_fetch_array($result);
+//         $country = $row['countrynames'];
+$image_path = $row['image'];
+$state = $row['statenames'];
+$city = $row['citynames'];
+// $password = $row['password'];
+// $retype=$row['retype'];
+$role = $row['role'];
+
+
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
+  $upload_dir = 'img/';
+  $file = $_FILES['profile'];
+
+  // Check if file was uploaded without errors
+  if ($file['error'] == UPLOAD_ERR_OK) {
+    $file_tmp_path = $file['tmp_name'];
+    $file_name = $file['name'];
+    $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
+
+    // Generate a unique name for the file
+    $new_file_name = uniqid() . '.' . $file_extension;
+    $dest_path = $upload_dir . $new_file_name;
+
+    // Move the file to the img/ folder
+    if (move_uploaded_file($file_tmp_path, $dest_path)) {
+      // Prepare an SQL update query
+      $sql = "UPDATE employees SET image = '$new_file_name' WHERE Id = $id";
+
+      $result = mysqli_query($con, $sql);
+
+      // Execute the query
+      if ($result) {
+        $image_path = $new_file_name;
+      } else {
+        echo "Error updating record: ";
+      }
+    } else {
+      echo "Error moving the uploaded file.";
+    }
+  } else {
+    echo "Error uploading the file.";
+  }
 }
 
 ?>
 
+
+
+<!-- html -->
 <html lang="en">
 
 <head>
@@ -17,6 +83,7 @@ if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
 
   <!-- Bootstrap -->
   <link rel="stylesheet" type="text/css" href="css/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -25,8 +92,153 @@ if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   <style>
-    .form-group {
-      margin: 5px 0;
+    /* .profile-pic img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid #333;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      display: block;
+      margin: 0 auto 20px auto;
+    } */
+    .profile-pic {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-pic {
+      margin: 13px 217px;
+      border: none;
+      /* padding-bottom: 10px; */
+    }
+
+    .profile-pic img {
+      height: 150px;
+      width: auto;
+      border-radius: 50%;
+    }
+
+    #image-form {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+    }
+
+    .user-data {
+      border-collapse: collapse;
+      font-size: 18px;
+      text-align: left;
+    }
+
+    .user-data p {
+      display: table-row;
+    }
+
+    .user-data p::before {
+      content: attr(data-label);
+      display: table-cell;
+      font-weight: bold;
+      padding: 10px;
+      border: 1px solid #ddd;
+      background-color: #f2f2f2;
+    }
+
+    .user-data p span {
+      display: table-cell;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+
+    .user-data p:nth-child(even) span {
+      background-color: #f9f9f9;
+    }
+
+    .btn {
+      display: flex;
+      justify-content: center;
+
+      align-items: center;
+      padding-top: 10px;
+    }
+
+    .submit-btn a {
+      color: white;
+      text-decoration: none;
+
+
+    }
+
+    .edit-btn{
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+      overflow: hidden;
+      background-color: #FF651B;
+      position: relative;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .edit-btn input{
+      position: absolute;
+      cursor: pointer;
+      height: 40px;
+      opacity: 0;
+      top: 0;
+      left: 0;
+    }
+
+    .edit-btn i{
+      margin: 0 !important;
+      padding-left: 8px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .edit-btn:hover{
+      background-color: #214139;
+    }
+/* 
+    .fa-pencil:before {
+      padding: 10px;
+      padding-top: 10;
+      margin-left: 18px;
+      border-radius: 11px;
+      color: white;
+    } */
+
+    .delete-icon {
+      /* border: 1px solid black; */
+      padding:8px;
+      margin-left: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 24px;
+      background-color:#FF651B ;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+
+
+
+
+    }
+    .delete-icon:hover{
+      background-color: #214139;
+
     }
   </style>
 
@@ -77,48 +289,56 @@ if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
         </ul>
       </div>
       <div class="right_side_content">
-        <h1>User Information</h1>
-        <div class="list-contet">
+        <h1>My Profile</h1>
+        <div class="list-content">
 
 
-          <!-- form -->
-          <!-- <form class="form-edit" name="signupForm" method="post" id="myform"> -->
-            <!-- firstname -->
-            <div class="form-row">
-              <div class="form-label">
-                <label><span></span> </label>
+          <!-- <div class="profile-pic" style="height:150px;">
+            <img src="images/user.png" alt="img" id="profile-image">
+            <form id="image-form">
+              <input type="file" name="profile" id="select-file" onchange="uploadImage(event)">
+            </form>
+          </div> -->
+
+          <div class="profile-pic" style="height:150px;">
+            <img src=<?php echo $image_path ? 'img/' . $image_path : 'images/user.png'; ?> alt="img" id="profile-image">
+            <form id="image-form" action="profile-edit.php" method="POST" enctype="multipart/form-data">
+              <div class="edit-btn">
+                <i class="fa-solid fa-pencil"></i>
+                <input type="file" name="profile" id="select-file" onchange="uploadImage(event)">
               </div>
-              <div class="input-field">
-                <a href="edit-user.php?uid=$_SESSION['id']"><input type="submit" name="submit" class="submit-btn" value="Edit"></a>
-              </div>
+              <!-- <input type="submit" value="Upload"> -->
+            </form>
+            <div class="delete-icon">
+            <i class="fa-solid fa-trash"></i>
             </div>
+          </div>
 
-            <ul>
-              <li> User Id: <?php echo $_SESSION['Id']?></li>
-                
-              <li> First Name : <?php echo $_SESSION['firstname'] ?></li>
-              <li> Last Name : <?php echo $_row['lastname'] ?></li>
-              <li> Email : <?php echo $_SESSION['email'] ?></li>
-              <li> Mobile : <?php echo $_SESSION['mobile'] ?></li>
 
-             
- 
-            </ul>
+          <div class="container">
+            <div class="user-data">
+              <p data-label="First Name"><span><?php echo $firstname ?></span></p>
+              <p data-label="Last Name"><span><?php echo $lastname ?></span></p>
+              <p data-label="Email"><span><?php echo $email ?></span></p>
+              <p data-label="Role"><span><?php echo $role; ?></span></p>
+              <p data-label="Gender"><span><?php echo $gender; ?></span></p>
+              <p data-label="Country"><span><?php echo $country; ?></span></p>
+              <p data-label="State"><span><?php echo $state; ?></span></p>
+              <p data-label="City"><span><?php echo $city; ?></span> </p>
+
+            </div>
+          </div>
+
+          <div class="btn">
+            <button class="submit-btn"> <a href="edit-user.php?uid=<?php echo $id; ?>" style="color:white;"> Edit</a></button>
+          </div>
+
+
+
+
         </div>
-
       </div>
     </div>
-
-
-
-
-
-
-    </form>
-  </div>
-  </div>
-
-  </div>
   </div>
   <div class="footer">
     <div class="wrapper">
@@ -126,3 +346,18 @@ if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
     </div>
 
   </div>
+
+  <script>
+    function uploadImage(event) {
+      const image = event.target.files[0];
+      const img = document.getElementById("profile-image")
+      const imageUrl = URL.createObjectURL(image);
+      img.src = imageUrl;
+      document.getElementById('image-form').submit()
+    }
+  </script>
+
+
+</body>
+
+</html>
