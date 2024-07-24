@@ -8,6 +8,7 @@ if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
 }
 
 
+
 $email = '';
 $password = '';
 $id='';
@@ -35,7 +36,7 @@ if (isset($_POST['submit'])) {
 
   if (empty($errors)) {
 
-    $sql = "SELECT Id,firstname,email,password from `employees` where email='$email'";
+    $sql = "SELECT Id,firstname,email, role_id,password from `employees` where email='$email'";
     $result = mysqli_query($con, $sql);
 
     if ($result) {
@@ -50,6 +51,7 @@ if (isset($_POST['submit'])) {
           $_SESSION['password']=$row['password'];
           $_SESSION['id']=$row['Id'];
           $_SESSION['firstname']=$row['firstname'];
+          $_SESSION['role']=$row['role_id'];
         
 
           if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {

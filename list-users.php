@@ -5,14 +5,28 @@ if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
   header('Location:login.php');
   exit;
 }
+$id=$_SESSION['id'];
+$query= "select role_id from employees where Id=$id";
+$result = mysqli_query($con, $query);
+$row=mysqli_fetch_assoc($result);
+if($row['role_id']!= 1  && $row['role_id']!= 5 ){
+	header("Location:dashboard.php");
+	exit;
+  }
+
 //****************** pagination*************************
 $search='';
 //define total number of results you want per page  
 $row_per_page = 4;   //limit
 //find the total number of results stored in the database  
-$query = "SELECT employees.Id,firstname,lastname,email,mobile,roles.role FROM `employees` left join roles on roles.id=employees.role_id where isDeleted=0";
+$query = "SELECT employees.Id,firstname,lastname,email,mobile,role_id,roles.role,roles.id FROM `employees` left join roles on roles.id=employees.role_id where isDeleted=0";
 $result = mysqli_query($con, $query);
+$row=mysqli_fetch_assoc($result);
 $total_rows = mysqli_num_rows($result);
+$role=$row['role_id'];
+
+
+
 
 //determine the total number of pages available  
 $number_of_page = ceil($total_rows / $row_per_page);
@@ -66,6 +80,7 @@ if (!empty($search)) {
 
 
 // ******************Combination of searching sorting pagination end*******************************
+
 
 
 

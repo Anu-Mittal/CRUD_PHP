@@ -23,9 +23,15 @@ $state = $row['state'];
 
 $city = $row['city'];
 $password = $row['password'];
-if($role!= 1  && $role != 5){
-  header("Location:dashboard.php");
+
+  //for permission
+
+if($role!= 1  && $role!= 5  && $_SESSION['id']!=$row['Id']){
+	header("Location:dashboard.php");
+	exit;
 }
+
+
 // $retype=$row['retype'];
 
 

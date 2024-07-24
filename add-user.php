@@ -1,10 +1,21 @@
 <?php
+include 'connect.php';
 session_start();
 if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
   header('Location:login.php');
   exit;
 }
-include 'connect.php';
+
+$id=$_SESSION['id'];
+$query= "select role_id from employees where Id=$id";
+$result = mysqli_query($con, $query);
+$row=mysqli_fetch_assoc($result);
+if($row['role_id']!= 1  && $row['role_id']!= 5 ){
+	header("Location:dashboard.php");
+	exit;
+  }
+
+
 $firstname = '';
 $lastname = '';
 $email = '';
@@ -16,6 +27,11 @@ $state = '';
 $city = '';
 $password = '';
 $retype = '';
+
+
+// if($user_role_id!=3 && $user_role_id!=4 && $Loggedin_user_id!=$user_id){
+//   header('location:dashboard.php?sort=month');
+// }
 
 
 
