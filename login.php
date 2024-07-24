@@ -11,7 +11,7 @@ if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
 
 $email = '';
 $password = '';
-$id='';
+$id = '';
 
 $firstname = '';
 
@@ -48,11 +48,11 @@ if (isset($_POST['submit'])) {
           $login = true;
           $_SESSION['loggedIn'] = true;
           $_SESSION['email'] = $row['email'];
-          $_SESSION['password']=$row['password'];
-          $_SESSION['id']=$row['Id'];
-          $_SESSION['firstname']=$row['firstname'];
-          $_SESSION['role']=$row['role_id'];
-        
+          $_SESSION['password'] = $row['password'];
+          $_SESSION['id'] = $row['Id'];
+          $_SESSION['firstname'] = $row['firstname'];
+          $_SESSION['role'] = $row['role_id'];
+
 
           if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
             header('Location:dashboard.php');
@@ -145,12 +145,17 @@ if (isset($_POST['submit'])) {
             <div class="form-group">
               <label for="exampleInputPassword1">Password</label>
               <input type="password" class="form-control" name="password" id="password" value="<?php echo $password; ?>">
-
+              <h5 style="font-size: 12px;text-align: end;">
+                <a href="password-reset.php" style="color:blue;"> forget password?</a>
+              </h5>
             </div>
+            <!-- <h5></h5> -->
             <button type="submit" name="submit" class="btn_login">Login</button>
+
             <div style=" padding:10px;padding-top: 10px;">
               <h5><span>Do you want to create an Account? </span><a href="sign-up.php" style="color: blue;">SignUp</a>
-                <h5>
+              </h5>
+
             </div>
           </form>
         </div>
@@ -159,7 +164,7 @@ if (isset($_POST['submit'])) {
 
 
     <script>
-      function validateLogin() {
+      function avalidateLogin() {
         var isValid = true;
 
         var myform = document.getElementById("myform");

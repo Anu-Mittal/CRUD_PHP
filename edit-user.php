@@ -6,6 +6,12 @@ if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
   header('Location:login.php');
   exit;
 }
+$myid=$_SESSION['id'];
+$sql1 = "SELECT * from `employees` where Id=$myid";
+$result1 = mysqli_query($con, $sql1);
+$row1= mysqli_fetch_assoc($result1);
+
+
 
 $id = $_GET['uid'];
 $sql = "SELECT * from `employees` where Id=$id";
@@ -26,16 +32,13 @@ $password = $row['password'];
 
   //for permission
 
-if($role!= 1  && $role!= 5  && $_SESSION['id']!=$row['Id']){
+if($role!= 1  && $role!= 5  && $myid!=$row['Id']){
 	header("Location:dashboard.php");
 	exit;
 }
 
 
 // $retype=$row['retype'];
-
-
-
 
 if (isset($_POST['submit'])) {
 
@@ -145,9 +148,6 @@ if (isset($_POST['submit'])) {
   }
 }
 ?>
-
-
-
 
 <!-- html -->
 <html lang="en">

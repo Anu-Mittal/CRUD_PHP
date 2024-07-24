@@ -12,7 +12,7 @@ $row=mysqli_fetch_assoc($result);
 if($row['role_id']!= 1  && $row['role_id']!= 5 ){
 	header("Location:dashboard.php");
 	exit;
-  }
+}
 
 //****************** pagination*************************
 $search='';
