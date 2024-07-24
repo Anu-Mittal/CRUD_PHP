@@ -33,41 +33,66 @@ $role = $row['role'];
 
 
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
-  $upload_dir = 'img/';
-  $file = $_FILES['profile'];
+// if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  if (isset($_FILES['profile']) ) {
+    $upload_dir = 'img/';
+    $file = $_FILES['profile'];
 
-  // Check if file was uploaded without errors
-  if ($file['error'] == UPLOAD_ERR_OK) {
-    $file_tmp_path = $file['tmp_name'];
-    $file_name = $file['name'];
-    $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
+    // Check if file was uploaded without errors
+    if ($file['error'] == UPLOAD_ERR_OK) {
+      $file_tmp_path = $file['tmp_name'];
+      $file_name = $file['name'];
+      $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
 
-    // Generate a unique name for the file
-    $new_file_name = uniqid() . '.' . $file_extension;
-    $dest_path = $upload_dir . $new_file_name;
+      // Generate a unique name for the file
+      $new_file_name = uniqid() . '.' . $file_extension;
+      $dest_path = $upload_dir . $new_file_name;
 
-    // Move the file to the img/ folder
-    if (move_uploaded_file($file_tmp_path, $dest_path)) {
-      // Prepare an SQL update query
-      $sql = "UPDATE employees SET image = '$new_file_name' WHERE Id = $id";
+      // Move the file to the img/ folder
+      if (move_uploaded_file($file_tmp_path, $dest_path)) {
+        // Prepare an SQL update query
+        $sql = "UPDATE employees SET image = '$new_file_name' WHERE Id = $id";
 
-      $result = mysqli_query($con, $sql);
+        $result = mysqli_query($con, $sql);
 
-      // Execute the query
-      if ($result) {
-        $image_path = $new_file_name;
+        // Execute the query
+        if ($result) {
+          $image_path = $new_file_name;
+        } else {
+          echo "Error updating record: ";
+        }
       } else {
-        echo "Error updating record: ";
+        echo "Error moving the uploaded file.";
       }
     } else {
-      echo "Error moving the uploaded file.";
+      echo "Error uploading the file.";
     }
-  } else {
-    echo "Error uploading the file.";
+  }
+
+
+
+  if (isset($_POST['delete-image']) && $_POST['delete-image'] == '1') {
+    $upload_dir = 'img/';
+    $image_to_delete = $image_path;
+
+    // Prepare an SQL update query to set image to null
+    $sql = "UPDATE employees SET image = NULL WHERE Id = $id";
+    $result = mysqli_query($con, $sql);
+
+    // Execute the query
+    if ($result) {
+      // Remove the image file from the server
+      // if (file_exists($upload_dir . $image_to_delete)) {
+      //   unlink($upload_dir . $image_to_delete);
+      // }
+      $image_path = null;
+      header('location:profile-edit.php');
+    } else {
+      die(mysqli_errno($con));
+    }
   }
 }
-
 ?>
 
 
@@ -118,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
 
     .profile-pic img {
       height: 150px;
-      width: auto;
+      width: 170px;
       border-radius: 50%;
     }
 
@@ -179,7 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
 
     }
 
-    .edit-btn{
+    .edit-btn {
       width: 40px;
       height: 40px;
       display: flex;
@@ -191,8 +216,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
       position: relative;
       cursor: pointer;
       transition: 0.3s;
+      margin-left: 27px;
     }
-    .edit-btn input{
+
+    .edit-btn input {
       position: absolute;
       cursor: pointer;
       height: 40px;
@@ -201,17 +228,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
       left: 0;
     }
 
-    .edit-btn i{
+    .edit-btn i {
       margin: 0 !important;
       padding-left: 8px;
       cursor: pointer;
       color: white;
     }
 
-    .edit-btn:hover{
+    .edit-btn:hover {
       background-color: #214139;
     }
-/* 
+
+    /* 
     .fa-pencil:before {
       padding: 10px;
       padding-top: 10;
@@ -222,21 +250,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
 
     .delete-icon {
       /* border: 1px solid black; */
-      padding:8px;
-      margin-left: 10px;
+      padding: 8px;
+      margin-left: 30px;
+      margin-top: 14px;
       border-radius: 10px;
       cursor: pointer;
       font-size: 24px;
-      background-color:#FF651B ;
+      background-color: #FF651B;
       color: white;
       cursor: pointer;
       transition: 0.3s;
-
-
-
-
+      border: none;
     }
-    .delete-icon:hover{
+
+    .delete-icon:hover {
       background-color: #214139;
 
     }
@@ -292,14 +319,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
         <h1>My Profile</h1>
         <div class="list-content">
 
-
-          <!-- <div class="profile-pic" style="height:150px;">
-            <img src="images/user.png" alt="img" id="profile-image">
-            <form id="image-form">
-              <input type="file" name="profile" id="select-file" onchange="uploadImage(event)">
-            </form>
-          </div> -->
-
           <div class="profile-pic" style="height:150px;">
             <img src=<?php echo $image_path ? 'img/' . $image_path : 'images/user.png'; ?> alt="img" id="profile-image">
             <form id="image-form" action="profile-edit.php" method="POST" enctype="multipart/form-data">
@@ -308,10 +327,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
                 <input type="file" name="profile" id="select-file" onchange="uploadImage(event)">
               </div>
               <!-- <input type="submit" value="Upload"> -->
+              <button type="button" class="delete-icon" id="delete-image">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+              <input type="hidden" name="delete-image" id="delete-image-input" value="0">
+
             </form>
-            <div class="delete-icon">
-            <i class="fa-solid fa-trash"></i>
-            </div>
+
           </div>
 
 
@@ -355,6 +377,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
       img.src = imageUrl;
       document.getElementById('image-form').submit()
     }
+
+    document.getElementById('delete-image').addEventListener('click', function() {
+      document.getElementById('delete-image-input').value = '1';
+      document.getElementById('image-form').submit();
+    });
   </script>
 
 
