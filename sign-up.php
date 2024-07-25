@@ -1,7 +1,9 @@
 <?php
-$login = false;
-include 'connect.php';
 session_start();
+$login = false;
+include 'signupmail.php';
+include 'connect.php';
+
 if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
     header('Location:dashboard.php');
     exit;
@@ -128,6 +130,7 @@ if (isset($_POST['submit'])) {
 
         $result = mysqli_query($con, $sql);
         if ($result) {
+            sendSignupMail($firstname,$email);
             header('Location:login.php');
             // echo "Data inserted successfully"
             // $login = true;
@@ -216,11 +219,11 @@ if (isset($_POST['submit'])) {
             z-index: 1;
             top: -30px;
             left: -18%;
-            
+
 
             /* bottom: -80%; */
             /* Position the tooltip above the text */
-            
+
             margin-left: -100px;
             /* opacity: 0; */
             transition: opacity 0.3s;
@@ -246,12 +249,11 @@ if (isset($_POST['submit'])) {
             border:1px solid blue;
         } */
 
-        .pass_input:focus + .tooltiptext{
+        .pass_input:focus+.tooltiptext {
             display: block !important;
             opacity: 1 !important;
-            
-        }
 
+        }
     </style>
 
 </head>
@@ -273,7 +275,7 @@ if (isset($_POST['submit'])) {
                     // }
                     ?>
 
-                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="images/unsucess-msg.png"><strong>Invalid!</strong> username or password </div>
+                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="images/unsucess-msg.png"><strong>Invalid!</strong> Details </div>
                     <form name="signupForm" id="myform" class="margin_bottom" method="post" onsubmit="return validateSignup()">
 
 
@@ -452,7 +454,7 @@ if (isset($_POST['submit'])) {
                             <!-- password -->
                             <div class="form-group tooltip">
                                 <label>Password: <span>*</span></label>
-                                <input type="password" class="search-box pass_input" name="password" placeholder="Enter Password" id="password"  onkeyup="validatePassword()" value="<?php echo $password; ?>" />
+                                <input type="password" class="search-box pass_input" name="password" placeholder="Enter Password" id="password" onkeyup="validatePassword()" value="<?php echo $password; ?>" />
                                 <span class="tooltiptext">
                                     <ul>
                                         <li class="pass_len">at least 8 characters </li>
@@ -771,9 +773,9 @@ if (isset($_POST['submit'])) {
                 //   isValid = false;
                 // }
 
-                //   if (!isValid) {
-                //     document.getElementById('msg').style.display = 'block';
-                //   }
+                if (!isValid) {
+                    document.getElementById('msg').style.display = 'block';
+                }
 
                 return isValid;
             }

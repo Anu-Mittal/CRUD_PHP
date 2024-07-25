@@ -86,15 +86,15 @@ function send_mail($get_name, $get_email, $token)
             <h1>Password Reset</h1>
         </div>
         <div class='content'>
-            <p>Hello {{userName}}</p>
+            <p>Hello $get_name</p>
             <p style='font-size:14px; margin-bottom: 30px;'>You requested a password reset for your account. Click the button below to reset your password:</p>
             <a href='localhost/crud_design/password-change.php?t=$token' class='button'>Reset Password</a>
             <p style='font-size:14px; margin-top: 30px;''>If you did not request this, please ignore this email.</p>
-            <p>Thank you, <br>Journalist LLM</p>
+            <p>Thank you.</p>
         </div>
         <div class='footer'>
             <p>If you have any questions, feel free to contact our support team.</p>
-            <p>&copy; 2024 JournalistLLM. All rights reserved.</p>
+            <p>&copy; 2024. All rights reserved.</p>
         </div>
     </div>
 </body>

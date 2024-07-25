@@ -6,10 +6,10 @@ if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
   header('Location:login.php');
   exit;
 }
-$myid=$_SESSION['id'];
+$myid = $_SESSION['id'];
 $sql1 = "SELECT * from `employees` where Id=$myid";
 $result1 = mysqli_query($con, $sql1);
-$row1= mysqli_fetch_assoc($result1);
+$row1 = mysqli_fetch_assoc($result1);
 
 
 
@@ -29,12 +29,13 @@ $state = $row['state'];
 
 $city = $row['city'];
 $password = $row['password'];
+$email1='';
 
-  //for permission
+//for permission
 
-if($role!= 1  && $role!= 5  && $myid!=$row['Id']){
-	header("Location:dashboard.php");
-	exit;
+if ($role != 1  && $role != 5  && $myid != $row['Id']) {
+  header("Location:dashboard.php");
+  exit;
 }
 
 
@@ -54,90 +55,122 @@ if (isset($_POST['submit'])) {
     $lastname = $_POST['lastname'];
   }
 
+
+  //////////////////////////////////
+
+
   if (empty($_POST['email'])) {
     $errors['email'] = "Email is required.";
   } else {
-    $email = $_POST['email'];
+    $email1 = $_POST['email'];
+    if($email!=$email1){
+    if (!filter_var($email1, FILTER_VALIDATE_EMAIL)) {
+      $errors['email'] = "Invalid email format.";
+    }
+     else {
+        $sql_email = "SELECT * FROM `employees` WHERE email='$email1'";
+        $result_email = mysqli_query($con, $sql_email);
+         if ( mysqli_num_rows($result_email)>0) {
+          $errors['email'] = "Email already exists.";
+       }
+      }
+    }
+    // }
   }
 
-  if (empty($_POST['mobile'])) {
-    $errors['mobile'] = "Mobile is required in this field";
-  } else {
-    $mobile = $_POST['mobile'];
-    $pattern = '/^\d{10}$/';
-    if (!preg_match($pattern, $mobile)) {
-      $errors['mobile'] = "Mobile must be of 10 characters long ";
+    // if (empty($_POST['email'])) {
+    //   $errors['email'] = "Email is required.";
+    // } else {
+    //   $email = $_POST['email'];
+
+    //   } else {
+
+
+    //     if ($row1 = mysqli_fetch_array($result_email)) {
+
+    //     }
+    //   }
+    // }
+    /////////////////////////////////////////////////
+
+
+    if (empty($_POST['mobile'])) {
+      $errors['mobile'] = "Mobile is required in this field";
     } else {
-      $mobile =  $_POST['mobile'];
+      $mobile = $_POST['mobile'];
+      $pattern = '/^\d{10}$/';
+      if (!preg_match($pattern, $mobile)) {
+        $errors['mobile'] = "Mobile must be of 10 characters long ";
+      } else {
+        $mobile =  $_POST['mobile'];
+      }
     }
-  }
 
-  if (empty($_POST['gender'])) {
-    $errors['gender'] = "Gender must be selected.";
-  } else {
-    $gender = $_POST['gender'];
-  }
-
-  if (empty($_POST['role'])) {
-    $errors['role'] = "Role is required in this field";
-  } else {
-    $role = $_POST['role'];
-  }
-
-  if (empty($_POST['country'])) {
-    $errors['country'] = "Country name is required in this field";
-  } else {
-    $country = $_POST['country'];
-    $updatedAt = time();
-
-    //     $get_country = "select * from Countries where id=$country";
-    //     $result =  mysqli_query($con, $get_country);
-    //     $row = mysqli_fetch_array($result);
-    //     $country = $row['countrynames'];
-  }
-
-  if (empty($_POST['state']) || $_POST['state'] == '') {
-    $errors['state'] = "State must be selected.";
-  } else {
-    $state = $_POST['state'];
-  }
-
-  if (empty($_POST['city']) || $_POST['city'] == '') {
-    $errors['city'] = "City must be selected.";
-  } else {
-    $city = $_POST['city'];
-  }
-
-  if (!empty($_POST['password'])) {
-    $errors['password'] = "Password is required."; 
-    $c_password = $_POST['password'];
-    $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>.]{8,}$/';
-
-    if (!preg_match($pattern, $c_password)) {
-      $errors['password'] = "Password must be of least 8 characters, contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
+    if (empty($_POST['gender'])) {
+      $errors['gender'] = "Gender must be selected.";
+    } else {
+      $gender = $_POST['gender'];
     }
-  }
-  else{
-    $c_password=$password;
-  }
-  if (!empty($_POST['password'])){
-    if (empty($_POST['retype'])) { 
-      $errors['retype']='Please Confirm Password';
+
+    if (empty($_POST['role'])) {
+      $errors['role'] = "Role is required in this field";
+    } else {
+      $role = $_POST['role'];
     }
-      else {
+
+    if (empty($_POST['country'])) {
+      $errors['country'] = "Country name is required in this field";
+    } else {
+      $country = $_POST['country'];
+      $updatedAt = time();
+
+      //     $get_country = "select * from Countries where id=$country";
+      //     $result =  mysqli_query($con, $get_country);
+      //     $row = mysqli_fetch_array($result);
+      //     $country = $row['countrynames'];
+    }
+
+    if (empty($_POST['state']) || $_POST['state'] == '') {
+      $errors['state'] = "State must be selected.";
+    } else {
+      $state = $_POST['state'];
+    }
+
+    if (empty($_POST['city']) || $_POST['city'] == '') {
+      $errors['city'] = "City must be selected.";
+    } else {
+      $city = $_POST['city'];
+    }
+
+    if (!empty($_POST['password'])) {
+      $errors['password'] = "Password is required.";
+      $c_password = $_POST['password'];
+      $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>.]{8,}$/';
+
+      if (!preg_match($pattern, $c_password)) {
+        $errors['password'] = "Password must be of least 8 characters, contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
+      }
+    } else {
+      $c_password = $password;
+    }
+    if (!empty($_POST['password'])) {
+      if (empty($_POST['retype'])) {
+        $errors['retype'] = 'Please Confirm Password';
+      } else {
         $retype = $_POST['retype'];
-        if($retype!=$password){
-            $errors['retype']='Password not match';
+        if ($retype != $password) {
+          $errors['retype'] = 'Password not match';
+        } else {
+          $password = md5($password);
         }
-        else{
-            $password=md5($password);
-        }
-     }
+      }
     }
   
-  
+
+
+
   if (empty($errors)) {
-    $sql = "UPDATE `employees` set firstname='$firstname',lastname='$lastname',email='$email',mobile='$mobile',gender='$gender',role_id='$role', country='$country',state='$state',city='$city',password='$c_password',updatedAt='$updatedAt' where Id=$id ";
+    $sql = "UPDATE `employees` set firstname='$firstname',lastname='$lastname',email='$email1',mobile='$mobile',gender='$gender',role_id='$role', country='$country',state='$state',city='$city',password='$c_password',updatedAt='$updatedAt' where Id=$id ";
     $result = mysqli_query($con, $sql);
     if ($result) {
       // echo "Data updated successfully";
@@ -147,6 +180,7 @@ if (isset($_POST['submit'])) {
     }
   }
 }
+
 ?>
 
 <!-- html -->
@@ -177,7 +211,7 @@ if (isset($_POST['submit'])) {
 </head>
 
 <body>
-<?php include "header.php" ?>
+  <?php include "header.php" ?>
 
   <div class="clear"></div>
   <div class="clear"></div>
@@ -222,7 +256,7 @@ if (isset($_POST['submit'])) {
       <div class="right_side_content">
         <h1>Update Users</h1>
         <div class="list-contet">
-        <?php
+          <?php
           if (!empty($errors)) {
             echo "<div class='error-message-div error-msg'><img src='images/unsucess-msg.png'><strong>Error!</strong> Fields are not filled</div>";
           }
@@ -276,13 +310,15 @@ if (isset($_POST['submit'])) {
                 <label>Gender: <span>*</span> </label>
               </div>
               <div class="input-field">
-                <label><input type="radio" name="gender" value="male" <?php if ($gender == 'male') {echo "checked='checked'";} ?>> <span class="gender"> Male </span></label>
+                <label><input type="radio" name="gender" value="male" <?php if ($gender == 'male') {
+                                                                        echo "checked='checked'";
+                                                                      } ?>> <span class="gender"> Male </span></label>
                 <label> <input type="radio" name="gender" value="female" <?php if ($gender == 'female') {
                                                                             echo "checked='checked'";
                                                                           } ?>> <span class="gender"> Female </span> </label><br>
-                                                                            <p id="gender-error" class="error"><?php echo isset($errors['gender']) ? $errors['gender'] : ''; ?></p>
+                <p id="gender-error" class="error"><?php echo isset($errors['gender']) ? $errors['gender'] : ''; ?></p>
               </div>
-            
+
             </div>
 
             <div class="form-row">
@@ -405,7 +441,7 @@ if (isset($_POST['submit'])) {
                 <label>Password: <span>*</span></label>
               </div>
               <div class="input-field">
-                <input type="password" class="search-box" name="password" placeholder="Enter Password" id=""/>
+                <input type="password" class="search-box" name="password" placeholder="Enter Password" id="" />
                 <p id="password-error" class="error"><?php echo isset($errors['password']) ? $errors['password'] : ''; ?></p>
               </div>
             </div>
@@ -415,7 +451,7 @@ if (isset($_POST['submit'])) {
                 <label> Retype Password: <span>*</span></label>
               </div>
               <div class="input-field">
-                <input type="password" class="search-box" name="retype" placeholder="Enter Password" id=""  />
+                <input type="password" class="search-box" name="retype" placeholder="Enter Password" id="" />
                 <p id="retype-error" class="error"><?php echo isset($errors['retype']) ? $errors['retype'] : ''; ?></p>
               </div>
             </div>

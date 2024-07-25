@@ -29,20 +29,17 @@ if (isset($_POST['submit'])) {
 
     if (empty($errors)) {
 
-        // $sql = "SELECT email from `employees` where email='$email'";
-        // $result = mysqli_query($con, $sql);
-        // if ($result) {
-        //     header('Location:login.php');
-        // } else {
-        //     die(mysqli_error($con));
-        // }
         $token= uniqid();
         $expiry_token=time();
         $sql1 = "UPDATE employees SET token = '$token', expiry_token = '$expiry_token' WHERE email = '$email'";
         $result1 = mysqli_query($con, $sql1);
+    
         
         if($result1){
-        send_mail($row1['firstname'],$email, $row1['token']);}
+            // echo var_dump($row1);
+            // die();
+        send_mail($row1['firstname'],$email, $token);
+        header("location:login.php");}
         else{
             die(mysqli_error($con));
         }
@@ -50,9 +47,6 @@ if (isset($_POST['submit'])) {
 }
 
 // echo var_dump($errors);
-
-
-
 ?>
 
 <html lang="en">
@@ -95,7 +89,9 @@ if (isset($_POST['submit'])) {
         </div>
     </div>
 </body>
+
 <script>
+
     function avalidateLogin() {
         var isValid = true;
 
@@ -111,9 +107,6 @@ if (isset($_POST['submit'])) {
             document.getElementById('msg').style.display = 'block';
         }
         return isValid;
-
-
-
     }
 </script>
 

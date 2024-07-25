@@ -8,16 +8,141 @@ session_start();
 //     header('Location: dashboard.php');
 //     exit;
 // }
+$token1 = $_GET['t'];
+$password = '';
+if (isset($token1)) {
+    $sql = "select * from employees where token='$token1'";
+    $result = mysqli_query($con, $sql);
+    $row = mysqli_fetch_assoc($result);
+    if (empty($row)) {
+        echo "Invalid URL";
+        die(mysqli_error($con));
+    }
+    else {
+        if (!(time() > $row['expiry_token'])  || !(time() <= ($row['expiry_token'] + 60*1))) {
+            $sql = "update `employees` set token=NULL,expiry_token=NULL where token='$token1'";
+            $result = mysqli_query($con, $sql);
+            if($result){
+                echo "print";
+
+            }
+        // } else {
+            // echo "expire time";
+            die(mysqli_error($con));
+        }
+    }
+}
+
+
+if (isset($_POST['submit'])) {
+    $errors = [];
+    if (empty($_POST['password'])) {
+        $errors['password'] = "Password is required.";
+    } else {
+        $password = $_POST['password'];
+        $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>.]{8,}$/';
+
+        if (!preg_match($pattern, $password)) {
+            $errors['password'] = "Password must fulfill all conditions.";
+        }
+    }
+    if (empty($_POST['retype'])) {
+        $errors['retype'] = 'Please Retype Password Again.';
+    } else {
+        $retype = $_POST['retype'];
+        if ($retype != $password) {
+            $errors['retype'] = 'Password not match';
+        } else {
+            $password = md5($password);
+        }
+    }
+    
+    if (empty($errors)) {
+        $sql = "update `employees` set password='$password',token=NULL,expiry_token=NULL where token='$token1'";
+        $result = mysqli_query($con, $sql);
+        if ($result) {
+            // echo "Data inserted successfully";
+            header('location:login.php');
+        } else {
+            echo "Error: " . $sql . "<br>" . die(mysqli_error($con));
+        }
+    }
+}
+
+
+
+
 ?>
 
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin</title>
     <link href="css/dashboard.css" rel="stylesheet">
+
+    <style>
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            /* visibility: hidden; */
+            display: none;
+            width: 200px;
+            background-color: "white";
+            color: black;
+            text-align: center;
+            border-radius: 5px;
+            border: 1px solid black;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            top: -30px;
+            left: -39%;
+
+
+            /* bottom: -80%; */
+            /* Position the tooltip above the text */
+
+            margin-left: -100px;
+            /* opacity: 0; */
+            transition: opacity 0.3s;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -10px;
+            /* Position arrow to the left of the tooltip */
+            transform: translateY(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent transparent black;
+        }
+
+        /* .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        } */
+        /* .tooltip input:focus{
+            border:1px solid blue;
+        } */
+
+        .pass_input:focus+.tooltiptext {
+            display: block !important;
+            opacity: 1 !important;
+
+        }
+    </style>
 </head>
+
+
+
 <body>
     <div class="login_section">
         <div class="wrapper relative" style="height:300px">
@@ -25,32 +150,138 @@ session_start();
             <div class="heading-top">
                 <div class="logo-cebter"><a href="#"><img src="images/at your service_banner.png"></a></div>
             </div>
-            <div class="box" style="overflow-y: scroll;height:460px">
+            <div class="box">
                 <div class="outer_div">
-                    <h2 style="text-align:left;background-color:rgb(239, 239, 239); padding:7px 12px;width:90%;font-size:larger;">Reset Password <span></span></h2>
-                    <?php if (isset($_SESSION['status'])): ?>
-                <div class="error-message-div error-msg"><?php echo $_SESSION['status']; unset($_SESSION['status']); ?></div>
-            <?php endif; ?>
-                    <form class="margin_bottom" action="password-code-reset.php" role="form" method="POST">
-                        <input type="hidden" name="password_token" value="<?php if(isset($_GET['token'])){echo $_GET['token'];} ?>" >
-                        
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" class="form-control" name="email" value="<?php if(isset($_GET['email'])){echo $_GET['email'];} ?>" placeholder="Enter Email Address"  />
+                    <h2>Reset <span>Password</span></h2>
+
+                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="images/unsucess-msg.png"><strong>Invalid!</strong> password or not matched </div>
+
+                    <form name="signupForm" id="myform" class="margin_bottom" role="form" method="POST" onsubmit="return validateReset()">
+                        <!-- <input type="hidden" name="password_token" value="<?php if (isset($_GET['token'])) {
+                                                                                    echo $_GET['token'];
+                                                                                } ?>"> -->
+
+                        <div class="form-group tooltip">
+                            <label>Password <span>*</span></label>
+                            <input type="password" class="search-box pass_input" name="password" placeholder="Enter New Password" id="password" onkeyup="validatePassword()" value="" />
+                            <span class="tooltiptext">
+                                <ul>
+                                    <li class="pass_len">at least 8 characters </li>
+                                    <li class="pass_lower">at least one lowercase letter,</li>
+                                    <li class="pass_upper">one uppercase letter,</li>
+                                    <li class="pass_num">one numeric digit</li>
+                                    <li class="pass_special">one special character.</li>
+                                </ul>
+                            </span>
+                            <p id='password-error' class='error'><?php echo (isset($errors['password'])) ? $errors['password'] : ''; ?></p>
                         </div>
-                        <div class="form-group">
+
+
+
+                        <!-- <div class="form-group">
                             <label for="new_password">Password</label>
-                            <input type="text" class="form-control" name="new_password" placeholder="Enter New Password"  />
-                        </div>
+                            <input type="password" class="form-control" name="password" id="password" placeholder="Enter New Password" />
+                        </div> -->
+
                         <div class="form-group">
-                            <label for="confirm_password">Confirm Password</label>
-                            <input type="text" class="form-control" name="confirm_password" placeholder="Update Password"  />
+                            <label for="confirm_password">Confirm Password <span>*</span></label>
+                            <input type="password" class="form-control" name="retype" id="retype" placeholder="Confirm Password" />
                         </div>
-                        <button style="margin-top:15px; padding:5px;background-color:#007FFF;border:0px;border-radius:2px; color:white;" type="submit" name="password_update">Update Password</button>
+
+                        <button type="submit" name="submit" class="btn_login">Reset</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        //validatePassword
+        function highlightErrors(errorClass) {
+            // First, reset all to default color
+            let allClasses = ["pass_lower", "pass_upper", "pass_num", "pass_special", "pass_len"];
+            allClasses.forEach(cls => {
+                let elements = document.getElementsByClassName(cls);
+                for (let element of elements) {
+                    element.style.color = "green"; // default color
+                }
+            });
+
+            // Now, set the color to red for classes in the errorClass array
+            errorClass.forEach(cls => {
+                let elements = document.getElementsByClassName(cls);
+                for (let element of elements) {
+                    element.style.color = "red";
+                }
+            });
+        }
+
+        function validatePassword() {
+            const password = document.getElementById("password").value;
+            const errorMessage = document.getElementById("error-message");
+
+            let errors = [];
+            let errorClass = []
+            if (!/(?=.*[a-z])/.test(password)) {
+                errors.push("at least one lowercase letter");
+                errorClass.push("pass_lower")
+
+            }
+            if (!/(?=.*[A-Z])/.test(password)) {
+                errors.push("at least one uppercase letter");
+                errorClass.push("pass_upper")
+            }
+            if (!/(?=.*\d)/.test(password)) {
+                errors.push("at least one digit");
+                errorClass.push("pass_num")
+            }
+            if (!/(?=.*[!@#$%^&*()\-_=+{};:,<.>])/.test(password)) {
+                errors.push("at least one special character");
+                errorClass.push("pass_special")
+            }
+            if (password.length < 8) {
+                errors.push("a minimum length of 8 characters");
+                errorClass.push("pass_len")
+            }
+
+            highlightErrors(errorClass);
+        }
+
+
+
+
+
+
+        function validateReset() {
+            var isValid = true;
+
+
+            var myform = document.getElementById("myform");
+            var passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>.]{8,}$/;
+            var password = document.forms["signupForm"]["password"].value;
+            var retype = document.forms["signupForm"]["retype"].value;
+
+
+            if (password == "") {
+                isValid = false;
+            } else if (!password.match(passwordPattern)) {
+                isValid = false;
+            }
+
+            if (retype == "") {
+                isValid = false;
+            } else if (retype != password) {
+
+                isValid = false;
+            }
+
+
+            if (!isValid) {
+                document.getElementById('msg').style.display = 'block';
+            }
+
+            return isValid;
+        }
+    </script>
 </body>
+
 </html>

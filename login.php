@@ -164,7 +164,7 @@ if (isset($_POST['submit'])) {
 
 
     <script>
-      function avalidateLogin() {
+      function validateLogin() {
         var isValid = true;
 
         var myform = document.getElementById("myform");
