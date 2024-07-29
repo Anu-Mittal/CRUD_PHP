@@ -1,8 +1,9 @@
 <?php
 session_start();
 $login = false;
-include 'signupmail.php';
 include 'connect.php';
+include 'email-service.php';
+
 
 if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
     header('Location:dashboard.php');
@@ -130,7 +131,18 @@ if (isset($_POST['submit'])) {
 
         $result = mysqli_query($con, $sql);
         if ($result) {
-            sendSignupMail($firstname,$email);
+            $subject = 'Account Created Successfuly!';
+            $name = $row1['firstname'];
+            
+            $sql = "select * from templates_info where temp_names='signup_mail'";
+            $result=mysqli_query($con,$sql);
+
+            $row = mysqli_fetch_assoc($result);
+            $body = $row['templates'];
+
+            $body = str_replace("{{name}}",$name,$body);
+        
+            sendEmail($row1['firstname'],$email, $subject, $body);
             header('Location:login.php');
             // echo "Data inserted successfully"
             // $login = true;
@@ -352,13 +364,13 @@ if (isset($_POST['submit'])) {
 
                                                 echo "<option selected value='$row1[id]'>$row1[role]</option>";
                                             } else {
-                                                if ($row1['id'] == 2) {
-                                                    echo "<option selected value='$row1[id]'>$row1[role]</option>";
-                                                } else {
+                                                // if ($row1['id'] == 2) {
+                                                //     echo "<option selected value='$row1[id]'>$row1[role]</option>";
+                                                // } else {
                                                     echo "<option value='$row1[id]'>$row1[role]</option>";
                                                 }
                                             }
-                                        }
+                                        // }
                                         ?>
                                     </select>
                                     <p id="role-error" class="error"><?php echo isset($errors['role']) ? $errors['role'] : ''; ?></p>

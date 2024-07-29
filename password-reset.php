@@ -1,6 +1,6 @@
 <?php
 include 'connect.php';
-include 'password-code-reset.php';
+include 'email-service.php';
 
 
 $email = '';
@@ -15,32 +15,45 @@ if (isset($_POST['submit'])) {
         $email = $_POST['email'];
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = "Invalid email format.";
-        }
-        else {
+        } else {
             $sql_email = "SELECT * FROM `employees` WHERE email='$email'";
             $result = mysqli_query($con, $sql_email);
-            $row1=mysqli_fetch_assoc($result);
-      
+            $row1 = mysqli_fetch_assoc($result);
+
             if (empty($row1)) {
-              $errors['email'] = "Email not registered.";
+                $errors['email'] = "Email not registered.";
             }
-          }
+        }
     }
 
     if (empty($errors)) {
 
-        $token= uniqid();
-        $expiry_token=time();
+        $token = uniqid();
+        $expiry_token = time();
         $sql1 = "UPDATE employees SET token = '$token', expiry_token = '$expiry_token' WHERE email = '$email'";
         $result1 = mysqli_query($con, $sql1);
-    
-        
-        if($result1){
+
+
+        if ($result1) {
             // echo var_dump($row1);
             // die();
-        send_mail($row1['firstname'],$email, $token);
-        header("location:login.php");}
-        else{
+            $subject = "Password Change Request";
+            $name = $row1['firstname'];
+            
+            $sql = "select * from templates_info where temp_names='forget_password'";
+            $result=mysqli_query($con,$sql);
+
+            $row = mysqli_fetch_assoc($result);
+            $body = $row['templates'];
+
+            $body = str_replace("{{name}}",$name,$body);
+            $link="localhost/crud_design/password-change.php?t=$token";
+            
+            $body=str_replace("{{url}}",$link,$body);
+
+            sendEmail($row1['firstname'], $email, $subject, $body);
+            header("location:login.php");
+        } else {
             die(mysqli_error($con));
         }
     }
@@ -91,7 +104,6 @@ if (isset($_POST['submit'])) {
 </body>
 
 <script>
-
     function avalidateLogin() {
         var isValid = true;
 

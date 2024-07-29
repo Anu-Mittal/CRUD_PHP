@@ -77,7 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $image_to_delete = $image_path;
 
     // Prepare an SQL update query to set image to null
+  
     $sql = "UPDATE employees SET image = NULL WHERE Id = $id";
+    // $sql = "DELETE from  employees WHERE Id = $id";
     $result = mysqli_query($con, $sql);
 
     // Execute the query
@@ -89,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $image_path = null;
       header('location:profile-edit.php');
     } else {
-      die(mysqli_errno($con));
+      die(mysqli_error($con));
     }
   }
 }
@@ -320,7 +322,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="list-content">
 
           <div class="profile-pic" style="height:150px;">
-            <img src=<?php echo $image_path ? 'img/' . $image_path : 'images/user.png'; ?> alt="img" id="profile-image">
+            <img src=<?php echo $image_path ? 'img/' . $image_path : 'images/userr.png'; ?> alt="img" id="profile-image">
             <form id="image-form" action="profile-edit.php" method="POST" enctype="multipart/form-data">
               <div class="edit-btn">
                 <i class="fa-solid fa-pencil"></i>

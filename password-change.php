@@ -2,12 +2,13 @@
 // $showerror = false;
 // $login = false;
 include 'connect.php';
-
+include 'email-service.php';
 session_start();
 // if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
 //     header('Location: dashboard.php');
 //     exit;
 // }
+
 $token1 = $_GET['t'];
 $password = '';
 if (isset($token1)) {
@@ -19,20 +20,19 @@ if (isset($token1)) {
         die(mysqli_error($con));
     }
     else {
-        if (!(time() > $row['expiry_token'])  || !(time() <= ($row['expiry_token'] + 60*1))) {
+        if (!(time() > $row['expiry_token'])  || !(time() <= ($row['expiry_token'] + 60*5))) {
             $sql = "update `employees` set token=NULL,expiry_token=NULL where token='$token1'";
             $result = mysqli_query($con, $sql);
-            if($result){
-                echo "print";
+            if(!$result){
+            //     echo "print";
 
-            }
+            // }
         // } else {
             // echo "expire time";
             die(mysqli_error($con));
         }
     }
-}
-
+    }}
 
 if (isset($_POST['submit'])) {
     $errors = [];
@@ -62,12 +62,26 @@ if (isset($_POST['submit'])) {
         $result = mysqli_query($con, $sql);
         if ($result) {
             // echo "Data inserted successfully";
+            $subject = "Password Changed Successfully!";
+            $name = $row['firstname'];
+            
+            $sql = "select * from templates_info where temp_names='change_password'";
+            $result=mysqli_query($con,$sql);
+
+            $row1= mysqli_fetch_assoc($result);
+            $body = $row1['templates'];
+
+            $body = str_replace("{{name}}",$name,$body);
+
+            sendEmail($row['name'], $row['email'], $subject, $body);
             header('location:login.php');
+
         } else {
             echo "Error: " . $sql . "<br>" . die(mysqli_error($con));
         }
     }
 }
+
 
 
 
