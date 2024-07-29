@@ -1,8 +1,8 @@
 <?php
 // $showerror = false;
 // $login = false;
-include 'connect.php';
-include 'email-service.php';
+include '../connect.php';
+include '../email-service.php';
 session_start();
 // if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
 //     header('Location: dashboard.php');
@@ -74,7 +74,7 @@ if (isset($_POST['submit'])) {
             $body = str_replace("{{name}}",$name,$body);
 
             sendEmail($row['name'], $row['email'], $subject, $body);
-            header('location:login.php');
+            header('location:../login');
 
         } else {
             echo "Error: " . $sql . "<br>" . die(mysqli_error($con));
@@ -95,7 +95,7 @@ if (isset($_POST['submit'])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin</title>
-    <link href="css/dashboard.css" rel="stylesheet">
+    <link href="../css/dashboard.css" rel="stylesheet">
 
     <style>
         .tooltip {
@@ -162,13 +162,13 @@ if (isset($_POST['submit'])) {
         <div class="wrapper relative" style="height:300px">
             <div style="display:none" class="meassage_successful_login">You have Successfull Edit </div>
             <div class="heading-top">
-                <div class="logo-cebter"><a href="#"><img src="images/at your service_banner.png"></a></div>
+                <div class="logo-cebter"><a href="#"><img src="../images/at your service_banner.png"></a></div>
             </div>
             <div class="box">
                 <div class="outer_div">
                     <h2>Reset <span>Password</span></h2>
 
-                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="images/unsucess-msg.png"><strong>Invalid!</strong> password or not matched </div>
+                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> password or not matched </div>
 
                     <form name="signupForm" id="myform" class="margin_bottom" role="form" method="POST" onsubmit="return validateReset()">
                         <!-- <input type="hidden" name="password_token" value="<?php if (isset($_GET['token'])) {

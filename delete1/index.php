@@ -1,5 +1,5 @@
 <?php
-include 'connect.php';
+include '../connect.php';
 if(isset($_GET['id'])){
     $id= $_GET['id'];
     $deletedAt=time();
@@ -8,7 +8,7 @@ if(isset($_GET['id'])){
     $result=mysqli_query($con,$sql);
     if($result){
         // echo "Deleted successfully";
-        header('location:list-users.php');
+        header('location:../listusers');
        
     }
     else{

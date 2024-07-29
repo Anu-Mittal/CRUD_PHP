@@ -1,8 +1,8 @@
 <?php
-include 'connect.php';
+include '../connect.php';
 session_start();
 if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
-  header('Location:login.php');
+  header('Location:../login');
   exit;
 }
 
@@ -11,7 +11,7 @@ $query= "select role_id from employees where Id=$id";
 $result = mysqli_query($con, $query);
 $row=mysqli_fetch_assoc($result);
 if($row['role_id']!= 1  && $row['role_id']!= 5 ){
-	header("Location:dashboard.php");
+	header("Location:../dashboard");
 	exit;
   }
 
@@ -148,7 +148,7 @@ if (isset($_POST['submit'])) {
     $result = mysqli_query($con, $sql);
     if ($result) {
       // echo "Data inserted successfully";
-      header('location:list-users.php');
+      header('location:/listusers');
     } else {
       echo "Error: " . $sql . "<br>" . die(mysqli_error($con));
     }
@@ -168,7 +168,7 @@ if (isset($_POST['submit'])) {
   <title>Admin</title>
 
   <!-- Bootstrap -->
-  <link rel="stylesheet" type="text/css" href="css/dashboard.css">
+  <link rel="stylesheet" type="text/css" href="../css/dashboard.css">
 
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -237,15 +237,15 @@ if (isset($_POST['submit'])) {
 </head>
 
 <body>
-  <?php include "header.php" ?>
+  <?php include "../header.php" ?>
   <div class="clear"></div>
   <div class="clear"></div>
   <div class="content">
     <div class="wrapper">
       <div class="bedcram">
         <ul>
-          <li><a href="dashboard.php">Home</a></li>
-          <li><a href="list-users.php">List Users</a></li>
+          <li><a href="../dashboard">Home</a></li>
+          <li><a href="../listusers">List Users</a></li>
           <li>Edit Users</li>
         </ul>
       </div>
@@ -282,16 +282,16 @@ if (isset($_POST['submit'])) {
         <h1>Add Users</h1>
         <?php
         if (!empty($errors)) {
-          echo "<div class='error-message-div error-msg'><img src='images/unsucess-msg.png'><strong>Error!</strong> Fields are not filled</div>";
+          echo "<div class='error-message-div error-msg'><img src='../images/unsucess-msg.png'><strong>Error!</strong> Fields are not filled</div>";
         }
         ?>
 
         <div class="list-contet">
-          <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="images/unsucess-msg.png"><strong>Error!</strong> Fields are not filled </div>
+          <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Error!</strong> Fields are not filled </div>
 
           <!-- form for insert data -->
 
-          <form class="form-edit" name="signupForm" id="myform" method="POST" action="add-user.php" onsubmit="return validateForm()">
+          <form class="form-edit" name="signupForm" id="myform" method="POST" action="../adduser" onsubmit="return validateForm()">
             <!-- firstname -->
             <div class="form-row">
               <div class="form-label">
@@ -528,7 +528,7 @@ if (isset($_POST['submit'])) {
         redirect: 'follow'
       };
 
-      fetch("statefetch.php", requestOptions)
+      fetch("../statefetch.php", requestOptions)
         .then(response => {
 
           if (!response.ok) {
@@ -577,7 +577,7 @@ if (isset($_POST['submit'])) {
         redirect: 'follow'
       };
 
-      fetch("cityfetch.php", requestOptions)
+      fetch("../cityfetch.php", requestOptions)
         .then(response => {
 
           if (!response.ok) {

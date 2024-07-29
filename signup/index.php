@@ -1,12 +1,12 @@
 <?php
 session_start();
 $login = false;
-include 'connect.php';
-include 'email-service.php';
+include '../connect.php';
+include '../email-service.php';
 
 
 if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
-    header('Location:dashboard.php');
+    header('Location:../dashboard');
     exit;
 }
 
@@ -143,7 +143,7 @@ if (isset($_POST['submit'])) {
             $body = str_replace("{{name}}",$name,$body);
         
             sendEmail($row1['firstname'],$email, $subject, $body);
-            header('Location:login.php');
+            header('Location:../login');
             // echo "Data inserted successfully"
             // $login = true;
             // session_start();
@@ -172,7 +172,7 @@ if (isset($_POST['submit'])) {
     <title>Admin</title>
 
     <!-- Bootstrap -->
-    <link href="css/dashboard.css" rel="stylesheet">
+    <link href="../css/dashboard.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -283,15 +283,15 @@ if (isset($_POST['submit'])) {
                     <h2> User <span> Sign-Up</span></h2>
                     <?php
                     // if (!empty($errors)) {
-                    //     echo "<div class='error-message-div error-msg'><img src='images/unsucess-msg.png'><strong>Invalid!</strong> username or password</div>";
+                    //     echo "<div class='error-message-div error-msg'><img src='../images/unsucess-msg.png'><strong>Invalid!</strong> username or password</div>";
                     // }
                     ?>
 
-                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="images/unsucess-msg.png"><strong>Invalid!</strong> Details </div>
+                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> Details </div>
                     <form name="signupForm" id="myform" class="margin_bottom" method="post" onsubmit="return validateSignup()">
 
 
-                        <form class="form-edit" name="signupForm" id="myform" method="POST" action="add-user.php" onsubmit="return validateForm()">
+                        <form class="form-edit" name="signupForm" id="myform" method="POST" action="../adduser" onsubmit="return validateForm()">
                             <!-- firstname -->
                             <div class="form-group">
                                 <label for="exampleInputEmail1">First Name : <span>*</span></label>
@@ -505,7 +505,7 @@ if (isset($_POST['submit'])) {
 
                             <!-- for login -->
                             <div style=" padding:10px;padding-top: 10px;">
-                                <h5><span>Already Have an account? </span><a href="login.php" style="color: blue;">Login</a>
+                                <h5><span>Already Have an account? </span><a href="../login" style="color: blue;">Login</a>
                                     <h5>
                             </div>
                         </form>
@@ -536,7 +536,7 @@ if (isset($_POST['submit'])) {
                     redirect: 'follow'
                 };
 
-                fetch("statefetch.php", requestOptions)
+                fetch("../statefetch.php", requestOptions)
                     .then(response => {
 
                         if (!response.ok) {
@@ -586,7 +586,7 @@ if (isset($_POST['submit'])) {
                     redirect: 'follow'
                 };
 
-                fetch("cityfetch.php", requestOptions)
+                fetch("../cityfetch.php", requestOptions)
                     .then(response => {
 
                         if (!response.ok) {

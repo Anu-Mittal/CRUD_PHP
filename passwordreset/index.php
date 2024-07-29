@@ -1,6 +1,6 @@
 <?php
-include 'connect.php';
-include 'email-service.php';
+include '../connect.php';
+include '../email-service.php';
 
 
 $email = '';
@@ -47,12 +47,12 @@ if (isset($_POST['submit'])) {
             $body = $row['templates'];
 
             $body = str_replace("{{name}}",$name,$body);
-            $link="localhost/crud_design/password-change.php?t=$token";
+            $link="localhost/crud_design/passwordchange?t=$token";
             
             $body=str_replace("{{url}}",$link,$body);
 
             sendEmail($row1['firstname'], $email, $subject, $body);
-            header("location:login.php");
+            header("location:../login");
         } else {
             die(mysqli_error($con));
         }
@@ -69,7 +69,7 @@ if (isset($_POST['submit'])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin</title>
-    <link href="css/dashboard.css" rel="stylesheet">
+    <link href="../css/dashboard.css" rel="stylesheet">
 </head>
 
 <body>
@@ -77,7 +77,7 @@ if (isset($_POST['submit'])) {
         <div class="wrapper relative">
 
             <div class="heading-top">
-                <div class="logo-cebter"><a href="#"><img src="images/at your service_banner.png"></a></div>
+                <div class="logo-cebter"><a href="#"><img src="../images/at your service_banner.png"></a></div>
             </div>
             <div class="box">
                 <div class="outer_div">
@@ -86,7 +86,7 @@ if (isset($_POST['submit'])) {
                         echo "<div class='error-message-div error-msg'><img src='images/unsucess-msg.png'><strong>Invalid!</strong>   Email </div>";
                     }
                     ?>
-                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="images/unsucess-msg.png"><strong>Invalid!</strong> Email</div>
+                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> Email</div>
                     <!-- <h2>Reset<span> Password </span></h2> -->
 
                     <form name="signupForm" id="myform" class="margin_bottom" role="form" method="POST" onsubmit="return validateLogin()">
@@ -104,7 +104,7 @@ if (isset($_POST['submit'])) {
 </body>
 
 <script>
-    function avalidateLogin() {
+    function validateLogin() {
         var isValid = true;
 
         var myform = document.getElementById("myform");
