@@ -59,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Execute the query
         if ($result) {
           $image_path = $new_file_name;
+         
         } else {
           echo "Error updating record: ";
         }
@@ -88,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       // if (file_exists($upload_dir . $image_to_delete)) {
       //   unlink($upload_dir . $image_to_delete);
       // }
+      //unlink me folder / file name
       $image_path = null;
       header('location:../updateprofile');
     } else {
