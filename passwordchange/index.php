@@ -4,19 +4,26 @@
 include '../connect.php';
 include '../email-service.php';
 session_start();
-// if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
-//     header('Location: dashboard.php');
-//     exit;
-// }
 
+if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
+    header('Location: dashboard.php');
+    exit;
+}
+
+// if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
+//   header('Location:../login');
+//   exit;
+// }
+$_SESSION['status']="";
 $token1 = $_GET['t'];
 $password = '';
+$retype='';
 if (isset($token1)) {
     $sql = "select * from employees where token='$token1'";
     $result = mysqli_query($con, $sql);
     $row = mysqli_fetch_assoc($result);
     if (empty($row)) {
-        echo "Invalid URL";
+        echo "<h1>Invalid URL</h1>";
         die(mysqli_error($con));
     }
     else {
@@ -38,24 +45,31 @@ if (isset($_POST['submit'])) {
     $errors = [];
     if (empty($_POST['password'])) {
         $errors['password'] = "Password is required.";
+        $_SESSION['status']="Password is required.";
     } else {
         $password = $_POST['password'];
         $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>.]{8,}$/';
 
         if (!preg_match($pattern, $password)) {
             $errors['password'] = "Password must fulfill all conditions.";
+            $_SESSION['status'] = "Password must fulfill all conditions.";
         }
     }
     if (empty($_POST['retype'])) {
-        $errors['retype'] = 'Please Retype Password Again.';
-    } else {
+        if(!empty($_POST['password'])){
+        $errors['retype'] = 'Retype Password is required.';
+        $_SESSION['status'] = ' Retype Password is required.';
+    }} {
         $retype = $_POST['retype'];
         if ($retype != $password) {
-            $errors['retype'] = 'Password not match';
-        } else {
-            $password = md5($password);
-        }
+            $errors['retype'] = 'Password not match.';
+            $_SESSION['status'] = 'Password not match.';
+        } 
+        // else {
+        //     $password = md5($password);
+        // }
     }
+// }
     
     if (empty($errors)) {
         $sql = "update `employees` set password='$password',token=NULL,expiry_token=NULL where token='$token1'";
@@ -73,7 +87,8 @@ if (isset($_POST['submit'])) {
 
             $body = str_replace("{{name}}",$name,$body);
 
-            sendEmail($row['name'], $row['email'], $subject, $body);
+            sendEmail($row['name'], $row['email'], $subject, $body," ");
+            $_SESSION['status']="Password successfully changed.";
             header('location:../login');
 
         } else {
@@ -160,15 +175,20 @@ if (isset($_POST['submit'])) {
 <body>
     <div class="login_section">
         <div class="wrapper relative" style="height:300px">
-            <div style="display:none" class="meassage_successful_login">You have Successfull Edit </div>
+            <div style="display:none" class="meassage_successful_login" id="sucess">You have Successfull Edit </div>
             <div class="heading-top">
                 <div class="logo-cebter"><a href="#"><img src="../images/at your service_banner.png"></a></div>
             </div>
             <div class="box">
                 <div class="outer_div">
-                    <h2>Reset <span>Password</span></h2>
+                <?php
+                    if (!empty($_SESSION['status'])) {
+                        echo "<div class='error-message-div error-msg'>" .$_SESSION['status']. "</div>";
+                    }
+                    ?>
+                    <h2> Update<span> Password</span></h2>
 
-                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> password or not matched </div>
+                    <!-- <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> password or not matched </div> -->
 
                     <form name="signupForm" id="myform" class="margin_bottom" role="form" method="POST" onsubmit="return validateReset()">
                         <!-- <input type="hidden" name="password_token" value="<?php if (isset($_GET['token'])) {
@@ -177,7 +197,7 @@ if (isset($_POST['submit'])) {
 
                         <div class="form-group tooltip">
                             <label>Password <span>*</span></label>
-                            <input type="password" class="search-box pass_input" name="password" placeholder="Enter New Password" id="password" onkeyup="validatePassword()" value="" />
+                            <input type="password" class="search-box pass_input" name="password" placeholder="Enter New Password" id="password" onkeyup="validatePassword()" value="<?php echo $password?>" />
                             <span class="tooltiptext">
                                 <ul>
                                     <li class="pass_len">at least 8 characters </li>
@@ -187,7 +207,7 @@ if (isset($_POST['submit'])) {
                                     <li class="pass_special">one special character.</li>
                                 </ul>
                             </span>
-                            <p id='password-error' class='error'><?php echo (isset($errors['password'])) ? $errors['password'] : ''; ?></p>
+                            
                         </div>
 
 
@@ -199,7 +219,7 @@ if (isset($_POST['submit'])) {
 
                         <div class="form-group">
                             <label for="confirm_password">Confirm Password <span>*</span></label>
-                            <input type="password" class="form-control" name="retype" id="retype" placeholder="Confirm Password" />
+                            <input type="password" class="form-control" name="retype" id="retype" placeholder="Confirm Password"  value="<?php echo $retype;  ?>"/>
                         </div>
 
                         <button type="submit" name="submit" class="btn_login">Reset</button>
@@ -266,6 +286,8 @@ if (isset($_POST['submit'])) {
 
 
         function validateReset() {
+            return true;
+
             var isValid = true;
 
 
@@ -291,9 +313,11 @@ if (isset($_POST['submit'])) {
 
             if (!isValid) {
                 document.getElementById('msg').style.display = 'block';
+
             }
 
             return isValid;
+            document.getElementById('sucess').style.display='block';
         }
     </script>
 </body>

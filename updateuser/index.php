@@ -10,6 +10,7 @@ $myid = $_SESSION['id'];
 $sql1 = "SELECT * from `employees` where Id=$myid";
 $result1 = mysqli_query($con, $sql1);
 $row1 = mysqli_fetch_assoc($result1);
+$role1=$row1['role_id'];
 
 
 
@@ -24,6 +25,7 @@ $email = $row['email'];
 $mobile = $row['mobile'];
 $gender = $row['gender'];
 $role = $row['role_id'];
+
 $country = $row['country'];
 $state = $row['state'];
 
@@ -32,8 +34,9 @@ $password = $row['password'];
 $email1='';
 
 //for permission
-
-if ($role != 1  && $role != 5  && $myid != $row['Id']) {
+// echo $myid;
+// echo $row['Id'];
+if ($role1 != 1  && $role1 != 5  && $myid != $row['Id']) {
   header("Location:../dashboard");
   exit;
 }

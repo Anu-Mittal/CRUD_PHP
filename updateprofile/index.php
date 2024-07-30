@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       // if (file_exists($upload_dir . $image_to_delete)) {
       //   unlink($upload_dir . $image_to_delete);
       // }
-      //unlink me folder / file name
+      //unlink me folder / file
       $image_path = null;
       header('location:../updateprofile');
     } else {

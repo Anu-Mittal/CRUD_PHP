@@ -8,7 +8,7 @@ use PHPMailer\PHPMailer\Exception;
 require 'vendor/autoload.php';
 
 
-function sendEmail($get_name, $get_email, $get_subject, $get_body)
+function sendEmail($get_name, $get_email, $get_subject, $get_body,$id)
 {
     $mail = new PHPMailer(true);
     try {

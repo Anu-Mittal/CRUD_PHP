@@ -11,8 +11,8 @@
         </div>
         <div class="nav_top">
             <ul>
-                <li ><a href="../dashboard">Dashboard</a></li>
-                <li><a href="../listusers">Users</a></li>
+                <li id="dashboard"><a href="../dashboard" >Dashboard</a></li>
+                <li  id="listusers"><a href="../listusers">Users</a></li>
                 <li><a href=" agentloclist.php ">Setting</a></li>
                 <li><a href=" geoloclist.php ">Configuration</a></li>
             </ul>
@@ -22,4 +22,10 @@
 </div>
 <script>
 	console.log(window.location.pathname);
+    if(window.location.pathname.includes("dashboard"))
+   {document.getElementById('dashboard').className = 'active';}
+   else if(window.location.pathname.includes('listusers')){
+    document.getElementById('listusers').className = 'active';
+   }
+
 </script>

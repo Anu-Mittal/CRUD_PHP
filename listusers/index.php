@@ -60,7 +60,7 @@ if (!in_array($sort_column, $valid_columns)) {
 //Searching Part
 $search = '';
 if (isset($_GET['search']) && !empty($_GET['search'])) {
-	$search = $_GET['search'];
+	$search = trim($_GET['search']);
 }
 // ******************SEARCHING END ********************************    
 
@@ -251,9 +251,9 @@ if (!empty($search)) {
 						<tbody>
 							<tr class="table-heading">
 								<th width="10px">S.no</th>
-								<th width="98px"><a href="../listusers?php echo $page; ?>&sort=firstname&order=<?php echo $sort_column == 'firstname' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="firstname-header" >First Name</a></th>
-								<th width="100px"><a href="../listusers?page=<?php echo $page; ?>&sort=lastname&order=<?php echo $sort_column == 'lastname' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="lastname-header">Last Name</a></th>
-								<th width="113px"><a href="../listusers?page=<?php echo $page; ?>&sort=email&order=<?php echo $sort_column == 'email' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="email-header">E-Mail</a></th>
+								<th width="200px"><a href="../listusers?php echo $page; ?>&sort=firstname&order=<?php echo $sort_column == 'firstname' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="firstname-header" >First Name</a></th>
+								<th width="210px"><a href="../listusers?page=<?php echo $page; ?>&sort=lastname&order=<?php echo $sort_column == 'lastname' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="lastname-header">Last Name</a></th>
+								<th width="150px"><a href="../listusers?page=<?php echo $page; ?>&sort=email&order=<?php echo $sort_column == 'email' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="email-header">E-Mail</a></th>
 								<th width="113px"><a href="../listusers?page=<?php echo $page; ?>&sort=mobile&order=<?php echo $sort_column == 'mobile' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="mobile-header">Mobile</a></th>
 								<th width="97px"><a href="../listusers?page=<?php echo $page; ?>&sort=role&order=<?php echo $sort_column == 'role' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="role-header">Roles</a></th>
 								<th width="126px">Operations</th>
@@ -291,6 +291,8 @@ if (!empty($search)) {
                             </td>
                             </tr>";
 								}
+							}else{
+								echo "<td>No Records Found</td>";
 							}
 							?>
 						</tbody>
@@ -384,11 +386,12 @@ if (!empty($search)) {
         if (sortColumn && sortOrder) {
             const header = document.getElementById(`${sortColumn}-header`);
             if (header) {
-                const arrow = sortOrder === 'asc' ? '↑' : '↓';
+                const arrow = sortOrder === 'asc' ? '&uarr;' : '↓';
                 header.innerHTML += ` ${arrow}`;
             }
         }
     }
+	// '↑'
 
     window.onload = updateSortingArrows;
 </script>

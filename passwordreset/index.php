@@ -1,6 +1,17 @@
 <?php
 include '../connect.php';
 include '../email-service.php';
+session_start();
+// if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
+//   header('Location:../login');
+//   exit;
+// }
+if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
+    header('Location:../dashboard');
+    exit;
+  }
+  
+$_SESSION['status']="";
 
 
 $email = '';
@@ -11,20 +22,26 @@ if (isset($_POST['submit'])) {
 
     if (empty($_POST['email'])) {
         $errors['email'] = "Email is required.";
+        $_SESSION['status'] = "Email is required.";
     } else {
         $email = $_POST['email'];
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = "Invalid email format.";
+            $_SESSION['status'] = "Invalid email format.";
+            // echo $_SESSION['status'];
         } else {
             $sql_email = "SELECT * FROM `employees` WHERE email='$email'";
             $result = mysqli_query($con, $sql_email);
             $row1 = mysqli_fetch_assoc($result);
+            $id=$row1['Id'];
 
             if (empty($row1)) {
                 $errors['email'] = "Email not registered.";
+                 $_SESSION['status']="Email not registered.";
+            }
             }
         }
-    }
+    
 
     if (empty($errors)) {
 
@@ -32,7 +49,7 @@ if (isset($_POST['submit'])) {
         $expiry_token = time();
         $sql1 = "UPDATE employees SET token = '$token', expiry_token = '$expiry_token' WHERE email = '$email'";
         $result1 = mysqli_query($con, $sql1);
-
+      
 
         if ($result1) {
             // echo var_dump($row1);
@@ -47,17 +64,22 @@ if (isset($_POST['submit'])) {
             $body = $row['templates'];
 
             $body = str_replace("{{name}}",$name,$body);
-            $link="localhost/crud_design/passwordchange?t=$token";
+            $link="localhost/crud_design/passwordchange?t=$token&uid=$id";
             
             $body=str_replace("{{url}}",$link,$body);
 
-            sendEmail($row1['firstname'], $email, $subject, $body);
-            header("location:../login");
+
+
+            sendEmail($row1['firstname'], $email, $subject, $body,$id);
+           
+            $_SESSION['status']="Password successfully sent to your e-mail.";
+            // header("location:../login");
         } else {
             die(mysqli_error($con));
         }
     }
 }
+
 
 // echo var_dump($errors);
 ?>
@@ -82,16 +104,17 @@ if (isset($_POST['submit'])) {
             <div class="box">
                 <div class="outer_div">
                     <?php
-                    if (!empty($errors)) {
-                        echo "<div class='error-message-div error-msg'><img src='images/unsucess-msg.png'><strong>Invalid!</strong>   Email </div>";
+                    if (!empty($_SESSION['status'])) {
+                        echo "<div class='error-message-div error-msg'>" .$_SESSION['status']. "</div>";
                     }
                     ?>
-                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> Email</div>
-                    <!-- <h2>Reset<span> Password </span></h2> -->
+                  
+                    <h2>Reset<span> Password </span></h2>
+                    <div class="error-message-div error-msg" id="msg" style="display:none;"></div>
 
                     <form name="signupForm" id="myform" class="margin_bottom" role="form" method="POST" onsubmit="return validateLogin()">
-                        <div class="form-group" style="padding-top: 50px;margin-bottom: 15px;">
-                            <label for="email" style="padding-top: 26px;">Email Address</label>
+                        <div class="form-group" style="padding-top: 30px;margin-bottom: 15px;">
+                            <label for="email" style="padding-top: 10px;">Email Address</label>
                             <input type="email" class="form-control" name="email" placeholder="Enter Email Address" />
                         </div>
                         <!-- <button style="" type="submit" name="password_reset_link">Send Recover mail</button> -->
@@ -105,6 +128,7 @@ if (isset($_POST['submit'])) {
 
 <script>
     function validateLogin() {
+        return true;
         var isValid = true;
 
         var myform = document.getElementById("myform");
@@ -117,6 +141,10 @@ if (isset($_POST['submit'])) {
         }
         if (!isValid) {
             document.getElementById('msg').style.display = 'block';
+            document.getElementById('msg').innerText = 'Enter Valid Email';
+            
+
+
         }
         return isValid;
     }

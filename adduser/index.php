@@ -10,6 +10,7 @@ $id=$_SESSION['id'];
 $query= "select role_id from employees where Id=$id";
 $result = mysqli_query($con, $query);
 $row=mysqli_fetch_assoc($result);
+
 if($row['role_id']!= 1  && $row['role_id']!= 5 ){
 	header("Location:../dashboard");
 	exit;

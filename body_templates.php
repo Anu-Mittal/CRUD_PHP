@@ -1,7 +1,4 @@
 <!-- forget password mail template`    -->
-
-
-
 <!DOCTYPE html>
 <html>
 <head>

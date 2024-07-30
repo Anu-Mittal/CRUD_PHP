@@ -13,7 +13,7 @@ $email = $_SESSION['email'];
 // month -> (60*60*24*30)
 
 
-	
+
 
 // $a = array("month", "week", "day");
 // (array_map("myfunction", $a));
@@ -25,26 +25,28 @@ $email = $_SESSION['email'];
 // }
 
 
-$grp = isset($_GET['grp']) ? $_GET['grp'] : '';
+$grp = isset($_GET['grp']) ? $_GET['grp'] : 'month';
 
 $time = time();
 $timeFilter = "";
 
 switch ($grp) {
-    case 'day':
-        $timeFilter = "AND createdAt >= $time - (60*60*24)";
-        break;
-    case 'week':
-        $timeFilter = "AND createdAt >= $time - (60*60*24*7)";
-        break;
-    case 'month':
-        $timeFilter = "AND createdAt >= $time - (60*60*24*30)";
-        break;
-    default:
-        $timeFilter = "";
+	case 'day':
+		$timeFilter = "AND createdAt >= $time - (60*60*24)";
+		break;
+	case 'week':
+		$timeFilter = "AND createdAt >= $time - (60*60*24*7)";
+		break;
+	case 'month':
+		$timeFilter = "AND createdAt >= $time - (60*60*24*30)";
+		break;
+	default:
+		$timeFilter = "";
 }
 
-// Queries for bar graph
+// Queries for graph
+
+//for weeks
 $week4 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*7) AND $time $timeFilter";
 $result4 = mysqli_query($con, $week4);
 $w4 = mysqli_num_rows($result4);
@@ -60,6 +62,37 @@ $w2 = mysqli_num_rows($result2);
 $week1 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*28) AND $time-(60*60*24*21) $timeFilter";
 $result1 = mysqli_query($con, $week1);
 $w1 = mysqli_num_rows($result1);
+
+
+////for days
+$day1 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*7) AND $time-(60*60*24*6) $timeFilter";
+$r1 = mysqli_query($con, $day1);
+$d1 = mysqli_num_rows($r1);
+
+$day2 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*6) AND $time-(60*60*24*5) $timeFilter";
+$r2 = mysqli_query($con, $day2);
+$d2 = mysqli_num_rows($r2);
+
+$day3 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*5) AND $time-(60*60*24*4) $timeFilter";
+$r3 = mysqli_query($con, $day3);
+$d3 = mysqli_num_rows($r3);
+
+$day4 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*4) AND $time-(60*60*24*3) $timeFilter";
+$r4 = mysqli_query($con, $day4);
+$d4 = mysqli_num_rows($r4);
+
+$day5 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*3) AND $time-(60*60*24*2) $timeFilter";
+$r5 = mysqli_query($con, $day5);
+$d5 = mysqli_num_rows($r5);
+
+$day6 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*2) AND $time-(60*60*24*1) $timeFilter";
+$r6 = mysqli_query($con, $day6);
+$d6 = mysqli_num_rows($r6);
+
+$day7 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24) AND $time $timeFilter";
+$r7 = mysqli_query($con, $day7);
+$d7 = mysqli_num_rows($r7);
+
 
 // Queries for pie chart
 $male = "SELECT * FROM employees WHERE gender='male' $timeFilter";
@@ -374,12 +407,12 @@ $f = mysqli_num_rows($result6);
 					<!-- </div> -->
 					<!-- for drop down -->
 					<div class="filter-container" style="text-align: right; margin-bottom: 20px;">
-						<label for="chartFilter">Filter:</label>
+						<label for="chartFilter"></label>
 						<select id="chartFilter" onchange="updateCharts()">
 							<!-- <option value="all" >All</option> -->
-							<option value="month" <?php echo ($grp == 'month') ? 'selected' : ''; ?>>1 Month</option>
-							<option value="week" <?php echo ($grp == 'week') ? 'selected' : ''; ?>>Last Week</option>
-							<option value="day" <?php echo ($grp == 'day') ? 'selected' : ''; ?>> 1 Day</option>
+							<option value="month" <?php echo ($grp == 'month') ? 'selected' : ''; ?>>Month</option>
+							<option value="week" <?php echo ($grp == 'week') ? 'selected' : ''; ?>>Week</option>
+							<option value="day" <?php echo ($grp == 'day') ? 'selected' : ''; ?>>Day</option>
 						</select>
 					</div>
 
@@ -461,27 +494,65 @@ $f = mysqli_num_rows($result6);
 	<script>
 		//data
 		function getData1() {
+			const grp = <?php echo  '"' . $grp . '"'; ?>
 
-			return [{
-					week: "1",
-					visitors: <?php echo $w1 ?>
-				},
-				{
-					week:"2",
-					visitors: <?php echo $w2 ?>
-				},
-				{
-					week: "3",
-					visitors: <?php echo $w3 ?>
-				},
-				{
-					week: "4",
+			// console.log(grp);
+			if (grp === "month") {
+				return [{
+						week: " Week 1",
+						visitors: <?php echo $w1 ?>
+					},
+					{
+						week: " Week 2",
+						visitors: <?php echo $w2 ?>
+					},
+					{
+						week: " Week 3",
+						visitors: <?php echo $w3 ?>
+					},
+					{
+						week: "Week 4",
+						visitors: <?php echo $w4 ?>
+					},
+				];
+
+			} else if (grp === "week") {
+				return [{
+						week: " Day 1",
+						visitors: <?php echo $d1 ?>
+					},
+					{
+						week: " Day 2",
+						visitors: <?php echo $d2 ?>
+					},
+					{
+						week: " Day 3",
+						visitors: <?php echo $d3 ?>
+					},
+					{
+						week: "Day 4",
+						visitors: <?php echo $d4 ?>
+					},
+					{
+						week: " Day 5",
+						visitors: <?php echo $d5 ?>
+					},
+					{
+						week: " Day 6",
+						visitors: <?php echo $d6 ?>
+					},
+					{
+						week: "Day 7",
+						visitors: <?php echo $d7 ?>
+					},
+				];
+			} else if (grp === "day") {
+				return [{
+					week: " Today",
 					visitors: <?php echo $w4 ?>
-				},
+				}, ];
 
-
-
-			];
+			}
 		}
 
 		function formatNumber(value) {
@@ -523,14 +594,14 @@ $f = mysqli_num_rows($result6);
 					type: "category",
 					position: "bottom",
 					title: {
-						text:"",
+						text: "",
 					},
 				},
 				{
 					type: "number",
 					position: "left",
 					title: {
-						text: "TOTAL USERS",
+						text: "USERS",
 					},
 					label: {
 						formatter: ({
@@ -556,25 +627,98 @@ $f = mysqli_num_rows($result6);
 	<script src="https://cdn.jsdelivr.net/npm/ag-charts-enterprise@10.0.2/dist/umd/ag-charts-enterprise.js?t=1721132995946"></script>
 	<script>
 		function getData2() {
+
+
+			const grp = <?php echo  '"' . $grp . '"'; ?>
+
+			console.log(grp);
+
 			const data = [{
-					Weeks: 1,
+					Weeks: " Week 1",
 					Users: <?php echo $w1 ?>
 				},
 				{
-					Weeks: 2,
+					Weeks: "Week 2",
 					Users: <?php echo $w2 ?>
 				},
 				{
-					Weeks: 3,
+					Weeks: "Week 3",
 					Users: <?php echo $w3 ?>
 				},
 				{
-					Weeks: 4,
+					Weeks: "Week 4",
 					Users: <?php echo $w4 ?>
 				},
 			]
-			return data;
+			const data1 = [{
+				Weeks: "Today",
+				Users: <?php echo $w4 ?>
+			}]
+			const data2 = [{
+					Weeks: " Day 1",
+					Users: <?php echo $d1 ?>
+				},
+				{
+					Weeks: "  Day 2",
+					Users: <?php echo $d2 ?>
+				},
+				{
+					Weeks: "Day 3",
+					Users: <?php echo $d3 ?>
+				},
+				{
+					Weeks: "Day 4",
+					Users: <?php echo $d4 ?>
+				},
+				{
+					Weeks: "Day 5",
+					Users: <?php echo $d5 ?>
+				},
+				{
+					Weeks: "Day 6",
+					Users: <?php echo $d6 ?>
+				},
+				{
+					Weeks: "Day 7",
+					Users: <?php echo $d7 ?>
+				},
+
+
+			]
+			if (grp === "month") {
+				return data;
+			} else if (grp === "day") {
+				return data1;
+
+
+			} else if (grp === "week") {
+				return data2;
+
+			}
+		
 		}
+
+
+		//    const data = [{
+		// 			Weeks: 1,
+		// 			Users: 
+		// 		},
+		// 		{
+		// 			Weeks: 2,
+		// 			Users: 
+		// 		},
+		// 		{
+		// 			Weeks: 3,
+		// 			Users:
+		// 		},
+		// 		{
+		// 			Weeks: 4,
+		// 			Users: 
+		// 		},
+		// 	]
+	
+		// return data;
+		// }
 
 		const dateFormatter = new Intl.DateTimeFormat("en-US");
 		const tooltip = {
@@ -593,7 +737,7 @@ $f = mysqli_num_rows($result6);
 			container: document.getElementById("mychart2"),
 			data: getData2(),
 			title: {
-				text: "Users Created Data",
+				text: "Sign-Up Records",
 			},
 			footnote: {
 				text: "",
@@ -613,7 +757,7 @@ $f = mysqli_num_rows($result6);
 			],
 			axes: [{
 					position: "bottom",
-					type: "number",
+					type: "category",
 					title: {
 						text: "",
 					},
@@ -627,7 +771,7 @@ $f = mysqli_num_rows($result6);
 					position: "left",
 					type: "number",
 					title: {
-						text: "TOTAL USERS",
+						text: "USERS",
 					},
 				},
 			],
@@ -641,7 +785,7 @@ $f = mysqli_num_rows($result6);
 		function updateCharts() {
 			const value = document.getElementById("chartFilter").value
 			console.log("here", value);
-			window.location.href = "http://localhost/crud_design/dashboard.php?grp=" + value
+			window.location.href = "http://localhost/crud_design/dashboard/?grp=" + value
 		}
 	</script>
 
