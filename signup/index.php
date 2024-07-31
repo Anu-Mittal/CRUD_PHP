@@ -25,7 +25,7 @@ $retype = '';
 if (isset($_POST['submit'])) {
     $errors = [];
     if (empty($_POST['firstname'])) {
-        $errors['firstname'] = "Firstname is required.";
+        $errors['firstname'] = "Firstname is required .";
     } else {
         $firstname = $_POST['firstname'];
     }
@@ -126,23 +126,23 @@ if (isset($_POST['submit'])) {
         $updatedAt = time();
 
 
-        $sql = "INSERT  into `employees` (firstname,lastname, email,mobile,gender,role_id,country,state,city,password,createdAt,updatedAt)
+        $sql = "INSERT  into `em_users` (user_first_name,user_last_name, user_email,user_phone,user_gender,user_role_id,user_country_id,user_state_id,user_city_id,user_password,user_createdAt,user_updatedAt)
      values ('$firstname','$lastname','$email','$mobile','$gender','$role','$country','$state','$city','$password','$createdAt','$updatedAt')";
 
         $result = mysqli_query($con, $sql);
         if ($result) {
             $subject = 'Account Created Successfuly!';
-            $name = $row1['firstname'];
+            $name = $row1['user_first_name'];
             
-            $sql = "select * from templates_info where temp_names='signup_mail'";
+            $sql = "select * from em_templates where template_name='signup_mail'";
             $result=mysqli_query($con,$sql);
 
             $row = mysqli_fetch_assoc($result);
-            $body = $row['templates'];
+            $body = $row['template_body'];
 
             $body = str_replace("{{name}}",$name,$body);
         
-            sendEmail($row1['firstname'],$email, $subject, $body);
+            sendEmail($row1['user_first_name'],$email, $subject, $body,"");
             header('Location:../login');
             // echo "Data inserted successfully"
             // $login = true;
@@ -288,7 +288,7 @@ if (isset($_POST['submit'])) {
                     ?>
 
                     <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> Details </div>
-                    <form name="signupForm" id="myform" class="margin_bottom" method="post" onsubmit="return validateSignup()">
+                    <form name="signupForm" id="myform" class="margin_bottom" method="post" onsubmit="return validateSignup()" novalidate>
 
 
                         <form class="form-edit" name="signupForm" id="myform" method="POST" action="../adduser" onsubmit="return validateForm()">
@@ -356,7 +356,7 @@ if (isset($_POST['submit'])) {
                                     <select name="role" class="role-info" id="role">
                                         <option value="">Select Your Role</option>
                                         <?php
-                                        $sql1 = "select * from `roles`";
+                                        $sql1 = "select * from `em_roles`";
                                         $result1 = mysqli_query($con, $sql1);
                                         while ($row1 = mysqli_fetch_array($result1)) {
 
@@ -677,6 +677,7 @@ if (isset($_POST['submit'])) {
             }
             //validations   
             function validateSignup() {
+                // return true;
                 var isValid = true;
 
 
@@ -785,9 +786,9 @@ if (isset($_POST['submit'])) {
                 //   isValid = false;
                 // }
 
-                if (!isValid) {
-                    document.getElementById('msg').style.display = 'block';
-                }
+                // if (!isValid) {
+                //     document.getElementById('msg').style.display = 'block';
+                // }
 
                 return isValid;
             }

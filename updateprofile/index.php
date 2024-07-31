@@ -14,7 +14,7 @@ $email = $_SESSION['email'];
 
 $image_path = null;
 
-$sql = "SELECT employees.Id,firstname,lastname,email,gender,country,Countries.countrynames,state,States.statenames,city,Cities.citynames,mobile,roles.role,image FROM `employees` left join roles on roles.id=employees.role_id left join Countries on employees.country=Countries.id left join States on employees.state=States.id left join Cities on employees.city=Cities.id where isDeleted=0 and employees.Id=$id";
+$sql = "SELECT user_id,user_first_name,user_last_name,user_email,user_gender,user_country_id,em_countries.country_name,user_state_id,em_states.state_name,user_city_id,em_cities.city_name,user_phone,em_roles.role_name,user_image FROM `em_users` left join em_roles on em_roles.role_id=em_users.user_role_id left join em_countries on em_users.user_country_id=em_countries.country_id left join em_states on em_users.user_state_id=em_states.state_id left join em_cities on em_users.user_city_id=em_cities.city_id where user_isDeleted=0 and em_users.user_id=$id";
 
 
 $result = mysqli_query($con, $sql);
@@ -23,21 +23,21 @@ $row = mysqli_fetch_assoc($result);
 
 // $id1=$row['Id'];
 $firstname = $_SESSION['firstname'];
-$lastname = $row['lastname'];
+$lastname = $row['user_last_name'];
 // $email = $row['email'];
-$mobile = $row['mobile'];
-$gender = $row['gender'];
-$country = $row['countrynames'];
+$mobile = $row['user_phone'];
+$gender = $row['user_gender'];
+$country = $row['country_name'];
 // $get_country = "select * from Countries where id=$country";
 //         $result =  mysqli_query($con, $get_country);
 //         $row = mysqli_fetch_array($result);
 //         $country = $row['countrynames'];
-$image_path = $row['image'];
-$state = $row['statenames'];
-$city = $row['citynames'];
+$image_path = $row['user_image'];
+$state = $row['state_name'];
+$city = $row['city_name'];
 // $password = $row['password'];
 // $retype=$row['retype'];
-$role = $row['role'];
+$role = $row['role_name'];
 
 
 
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
                 // Prepare an SQL update query
-                $sql = "UPDATE employees SET image = '$new_file_name' WHERE Id = $id";
+                $sql = "UPDATE em_users SET image = '$new_file_name' WHERE user_id = $id";
 
                 $result = mysqli_query($con, $sql);
 

@@ -32,74 +32,72 @@ $timeFilter = "";
 
 switch ($grp) {
 	case 'day':
-		$timeFilter = "AND createdAt >= $time - (60*60*24)";
+		$timeFilter = "AND user_createdAt >= $time - (60*60*24)";
 		break;
 	case 'week':
-		$timeFilter = "AND createdAt >= $time - (60*60*24*7)";
+		$timeFilter = "AND user_createdAt >= $time - (60*60*24*7)";
 		break;
 	case 'month':
-		$timeFilter = "AND createdAt >= $time - (60*60*24*30)";
+		$timeFilter = "AND user_createdAt >= $time - (60*60*24*30)";
 		break;
 	default:
 		$timeFilter = "";
-}
 
+	}
 // Queries for graph
-
 //for weeks
-$week4 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*7) AND $time $timeFilter";
+$week4 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24*7) AND $time $timeFilter";
 $result4 = mysqli_query($con, $week4);
 $w4 = mysqli_num_rows($result4);
 
-$week3 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*14) AND $time-(60*60*24*7) $timeFilter";
+$week3 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24*14) AND $time-(60*60*24*7) $timeFilter";
 $result3 = mysqli_query($con, $week3);
 $w3 = mysqli_num_rows($result3);
 
-$week2 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*21) AND $time-(60*60*24*14) $timeFilter";
+$week2 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24*21) AND $time-(60*60*24*14) $timeFilter";
 $result2 = mysqli_query($con, $week2);
 $w2 = mysqli_num_rows($result2);
 
-$week1 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*28) AND $time-(60*60*24*21) $timeFilter";
+$week1 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24*28) AND $time-(60*60*24*21) $timeFilter";
 $result1 = mysqli_query($con, $week1);
 $w1 = mysqli_num_rows($result1);
 
 
 ////for days
-$day1 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*7) AND $time-(60*60*24*6) $timeFilter";
+$day1 = "SELECT * FROM em_users  WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24*7) AND $time-(60*60*24*6) $timeFilter";
 $r1 = mysqli_query($con, $day1);
 $d1 = mysqli_num_rows($r1);
 
-$day2 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*6) AND $time-(60*60*24*5) $timeFilter";
+$day2 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24*6) AND $time-(60*60*24*5) $timeFilter";
 $r2 = mysqli_query($con, $day2);
 $d2 = mysqli_num_rows($r2);
 
-$day3 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*5) AND $time-(60*60*24*4) $timeFilter";
+$day3 = "SELECT * FROM em_users  WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24*5) AND $time-(60*60*24*4) $timeFilter";
 $r3 = mysqli_query($con, $day3);
 $d3 = mysqli_num_rows($r3);
 
-$day4 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*4) AND $time-(60*60*24*3) $timeFilter";
+$day4 = "SELECT * FROM em_users  WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24*4) AND $time-(60*60*24*3) $timeFilter";
 $r4 = mysqli_query($con, $day4);
 $d4 = mysqli_num_rows($r4);
-
-$day5 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*3) AND $time-(60*60*24*2) $timeFilter";
+$day5 = "SELECT * FROM em_users  WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24*3) AND $time-(60*60*24*2) $timeFilter";
 $r5 = mysqli_query($con, $day5);
 $d5 = mysqli_num_rows($r5);
 
-$day6 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24*2) AND $time-(60*60*24*1) $timeFilter";
+$day6 = "SELECT * FROM em_users  WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24*2) AND $time-(60*60*24*1) $timeFilter";
 $r6 = mysqli_query($con, $day6);
 $d6 = mysqli_num_rows($r6);
 
-$day7 = "SELECT * FROM employees WHERE isDeleted = 0 AND createdAt BETWEEN $time-(60*60*24) AND $time $timeFilter";
+$day7 = "SELECT * FROM em_users  WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24) AND $time $timeFilter";
 $r7 = mysqli_query($con, $day7);
 $d7 = mysqli_num_rows($r7);
 
 
 // Queries for pie chart
-$male = "SELECT * FROM employees WHERE gender='male' $timeFilter";
-$result5 = mysqli_query($con, $male);
+$male = "SELECT * FROM em_users  WHERE gender='male' $timeFilter";
+$result5 = mysqli_query($con , $male);
 $m = mysqli_num_rows($result5);
 
-$female = "SELECT * FROM employees WHERE gender='female' $timeFilter";
+$female = "SELECT * FROM em_users  WHERE gender='female' $timeFilter";
 $result6 = mysqli_query($con, $female);
 $f = mysqli_num_rows($result6);
 

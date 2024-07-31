@@ -7,11 +7,11 @@ if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
 }
 
 $id=$_SESSION['id'];
-$query= "select role_id from employees where Id=$id";
+$query= "select user_role_id from em_users where user_id=$id";
 $result = mysqli_query($con, $query);
 $row=mysqli_fetch_assoc($result);
 
-if($row['role_id']!= 1  && $row['role_id']!= 5 ){
+if($row['user_role_id']!= 1  && $row['user_role_id']!= 5 ){
 	header("Location:../dashboard");
 	exit;
   }
@@ -58,7 +58,7 @@ if (isset($_POST['submit'])) {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
       $errors['email'] = "Invalid email format.";
     } else {
-      $sql_email = "SELECT * FROM `employees` WHERE email='$email'";
+      $sql_email = "SELECT * FROM `em_users` WHERE user_email='$email'";
       $result_email = mysqli_query($con, $sql_email);
 
       if ($row1 = mysqli_fetch_array($result_email)) {
@@ -143,7 +143,7 @@ if (isset($_POST['submit'])) {
     $updatedAt = time();
 
 
-    $sql = "INSERT  into `employees` (firstname,lastname, email,mobile,gender,role_id,country,state,city,password,createdAt,updatedAt)
+    $sql = "INSERT  into `em_users` (user_first_name,user_last_name, user_email,user_phone,user_gender,user_role_id,user_country_id,user_state_is,user_city_id,user_password,user_createdAt,user_updatedAt)
      values ('$firstname','$lastname','$email','$mobile','$gender','$role','$country','$state','$city','$password','$createdAt','$updatedAt')";
 
     $result = mysqli_query($con, $sql);
@@ -292,7 +292,7 @@ if (isset($_POST['submit'])) {
 
           <!-- form for insert data -->
 
-          <form class="form-edit" name="signupForm" id="myform" method="POST"  onsubmit="return validateForm()">
+          <form class="form-edit" name="signupForm" id="myform" method="POST"  onsubmit="return validateForm()" novalidate>
             <!-- firstname -->
             <div class="form-row">
               <div class="form-label">
@@ -361,16 +361,16 @@ if (isset($_POST['submit'])) {
                   <select name="role" class="role-info" id="role">
                     <option value="">Select Your Role</option>
                     <?php
-                    $sql1 = "select * from `roles`";
+                    $sql1 = "select * from `em_roles`";
                     $result1 = mysqli_query($con, $sql1);
                     while ($row1 = mysqli_fetch_array($result1)) {
-                      if ($role == $row1['id']) {
-                        echo "<option selected value='$row1[id]'>$row1[role]</option>";
+                      if ($role == $row1['role_id']) {
+                        echo "<option selected value='$row1[role_id]'>$row1[role_name]</option>";
                       } else {
-                        if ($row1['id'] == 2) {
-                          echo "<option selected value='$row1[id]'>$row1[role]</option>";
+                        if ($row1['role_id'] == 2) {
+                          echo "<option selected value='$row1[role_id]'>$row1[role_name]</option>";
                         } else {
-                          echo "<option value='$row1[id]'>$row1[role]</option>";
+                          echo "<option value='$row1[role_id]'>$row1[role_name]</option>";
                         }
                       }
                     }
@@ -393,13 +393,13 @@ if (isset($_POST['submit'])) {
                   <select name="country" class="country-info" id="countryId" onchange="fetchState()">
                     <option value="">Select Your Country</option>
                     <?php
-                    $sql1 = "select * from `Countries`";
+                    $sql1 = "select * from `em_countries`";
                     $result1 = mysqli_query($con, $sql1);
                     while ($row1 = mysqli_fetch_array($result1)) {
-                      if ($country == $row1['id']) {
-                        echo "<option selected value='$row1[id]'>$row1[countrynames]</option>";
+                      if ($country == $row1['country_id']) {
+                        echo "<option selected value='$row1[country_id]'>$row1[country_name]</option>";
                       } else {
-                        echo "<option value='$row1[id]'>$row1[countrynames]</option>";
+                        echo "<option value='$row1[country_id]'>$row1[country_name]</option>";
                       }
                     }
                     ?>

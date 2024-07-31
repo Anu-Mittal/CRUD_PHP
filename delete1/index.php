@@ -4,7 +4,7 @@ if(isset($_GET['id'])){
     $id= $_GET['id'];
     $deletedAt=time();
 
-    $sql="UPDATE employees SET isDeleted=1 ,deletedAt=$deletedAt where id=$id ";
+    $sql="UPDATE em_users SET user_isDeleted=1 ,user_deletedAt=$deletedAt where user_id=$id ";
     $result=mysqli_query($con,$sql);
     if($result){
         // echo "Deleted successfully";

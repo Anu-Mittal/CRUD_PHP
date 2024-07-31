@@ -27,13 +27,13 @@ if (isset($_POST['submit'])) {
         $email = $_POST['email'];
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = "Invalid email format.";
-            $_SESSION['status'] = "Invalid email format.";
+            $_SESSION['status'] = "Invalid Email Format.";
             // echo $_SESSION['status'];
         } else {
-            $sql_email = "SELECT * FROM `employees` WHERE email='$email'";
+            $sql_email = "SELECT * FROM `em_users` WHERE user_email='$email'";
             $result = mysqli_query($con, $sql_email);
             $row1 = mysqli_fetch_assoc($result);
-            $id=$row1['Id'];
+            $id=$row1['user_id'];
 
             if (empty($row1)) {
                 $errors['email'] = "Email not registered.";
@@ -47,7 +47,7 @@ if (isset($_POST['submit'])) {
 
         $token = uniqid();
         $expiry_token = time();
-        $sql1 = "UPDATE employees SET token = '$token', expiry_token = '$expiry_token' WHERE email = '$email'";
+        $sql1 = "UPDATE em_users SET user_token = '$token', user_expiry_token = '$expiry_token' WHERE user_email = '$email'";
         $result1 = mysqli_query($con, $sql1);
       
 
@@ -55,13 +55,13 @@ if (isset($_POST['submit'])) {
             // echo var_dump($row1);
             // die();
             $subject = "Password Change Request";
-            $name = $row1['firstname'];
+            $name = $row1['user_first_name'];
             
             $sql = "select * from templates_info where temp_names='forget_password'";
             $result=mysqli_query($con,$sql);
 
             $row = mysqli_fetch_assoc($result);
-            $body = $row['templates'];
+            $body = $row['template_body'];
 
             $body = str_replace("{{name}}",$name,$body);
             $link="localhost/crud_design/passwordchange?t=$token&uid=$id";
@@ -70,7 +70,7 @@ if (isset($_POST['submit'])) {
 
 
 
-            sendEmail($row1['firstname'], $email, $subject, $body,$id);
+            sendEmail($row1['user_first_name'], $email, $subject, $body,$id);
            
             $_SESSION['status']="Password successfully sent to your e-mail.";
             // header("location:../login");
@@ -92,6 +92,13 @@ if (isset($_POST['submit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin</title>
     <link href="../css/dashboard.css" rel="stylesheet">
+    <style>
+        .error{
+            color:red;
+            font-size:10px;
+            padding:10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -112,13 +119,14 @@ if (isset($_POST['submit'])) {
                     <h2>Reset<span> Password </span></h2>
                     <div class="error-message-div error-msg" id="msg" style="display:none;"></div>
 
-                    <form name="signupForm" id="myform" class="margin_bottom" role="form" method="POST" onsubmit="return validateLogin()">
+                    <form name="resetForm" id="myform" class="margin_bottom" role="form" method="POST" onsubmit="return validateReset()" novalidate>
                         <div class="form-group" style="padding-top: 30px;margin-bottom: 15px;">
                             <label for="email" style="padding-top: 10px;">Email Address</label>
                             <input type="email" class="form-control" name="email" placeholder="Enter Email Address" />
+                            <p id='email-error' class='error'><?php echo (isset($errors['email'])) ? $errors['email'] : ''; ?></p>
                         </div>
                         <!-- <button style="" type="submit" name="password_reset_link">Send Recover mail</button> -->
-                        <button type="submit" name="submit" class="btn_login">Send Link</button>
+                        <button type="submit" name="submit" class="btn_login">Submit</button>
                     </form>
                 </div>
             </div>
@@ -127,25 +135,28 @@ if (isset($_POST['submit'])) {
 </body>
 
 <script>
-    function validateLogin() {
-        return true;
+    function validateReset() {
+         return true;
         var isValid = true;
 
         var myform = document.getElementById("myform");
         var emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-        var email = document.forms["signupForm"]["email"].value;
+        var email = document.forms["resetForm"]["email"].value;
         if (email == "") {
+            document.getElementById("email-error").innerText = "Email is required.";
             isValid = false;
+
         } else if (!email.match(emailPattern)) {
+            document.getElementById("email-error").innerText = "Invalid Email Format.";
             isValid = false;
         }
-        if (!isValid) {
-            document.getElementById('msg').style.display = 'block';
-            document.getElementById('msg').innerText = 'Enter Valid Email';
+        // if (!isValid) {
+            // document.getElementById('msg').style.display = 'block';
+            // document.getElementById('msg').innerText = 'Enter Valid Email';
             
 
 
-        }
+        // }
         return isValid;
     }
 </script>

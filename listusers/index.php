@@ -6,11 +6,11 @@ if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
   exit;
 }
 $id=$_SESSION['id'];
-$query= "select role_id from employees where Id=$id";
+$query= "select user_role_id from em_users where user_id=$id";
 $result = mysqli_query($con, $query);
 $row=mysqli_fetch_assoc($result);
 
-if($row['role_id']!= 1  && $row['role_id']!= 5 ){
+if($row['user_role_id']!= 1  && $row['user_role_id']!= 5 ){
 	header("Location:../dashboard");
 	exit;
 }
@@ -20,11 +20,11 @@ $search='';
 //define total number of results you want per page  
 $row_per_page = 4;   //limit
 //find the total number of results stored in the database  
-$query = "SELECT employees.Id,firstname,lastname,email,mobile,role_id,roles.role,roles.id FROM `employees` left join roles on roles.id=employees.role_id where isDeleted=0";
+$query = "SELECT user_id,user_first_name,user_last_name,user_email,user_phone,user_role_id,role_name,role_id FROM `em_users` left join em_roles on em_roles.role_id=em_users.user_role_id where user_isDeleted=0";
 $result = mysqli_query($con, $query);
 $row=mysqli_fetch_assoc($result);
 $total_rows = mysqli_num_rows($result);
-$role=$row['role_id'];
+$role=$row['user_role_id'];
 
 
 
@@ -49,10 +49,10 @@ $first_row = ($page - 1) * $row_per_page;    //offset
 // Sorting Part
 $sort_column = isset($_GET['sort']) ? $_GET['sort'] : 'Id';
 $sort_order = isset($_GET['order']) && $_GET['order'] === 'desc' ? 'desc' : 'ASC';
-$valid_columns = ['Id', 'firstname', 'lastname', 'email', 'mobile', 'role'];
+$valid_columns = ['user_id', 'user_first_name', 'user_last_name', 'user_email', 'user_phone', 'role_name'];
 
 if (!in_array($sort_column, $valid_columns)) {
-	$sort_column = 'Id'; // Default sorting column
+	$sort_column = 'user_id'; // Default sorting column
 }
 // ******************SORTING END********************************
 // ******************SEARCHING********************************                                                                            
@@ -67,10 +67,10 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
 
 // ******************Combination of searching sorting pagination*******************************
 // SQL Query with Pagination, Sorting, and Searching
-$sql = "SELECT employees.Id,firstname,lastname,email,mobile,roles.role FROM `employees` left join roles on roles.id=employees.role_id where isDeleted=0 ";
+$sql = "SELECT user_id,user_first_name,user_last_name,user_email,user_phone,role_name FROM `em_users` left join em_roles on em_roles.role_id=em_users.role_id where user_isDeleted=0 ";
 
 if (!empty($search)) {
-	$sql .= " AND (firstname LIKE '%$search%' OR lastname LIKE '%$search%' OR email LIKE '%$search%' OR mobile LIKE '%$search%' Or role like '%$search%')";
+	$sql .= " AND (user_first_name LIKE '%$search%' OR user_last_name LIKE '%$search%' OR user_email LIKE '%$search%' OR user_phone LIKE '%$search%' Or role_name like '%$search%')";
 
 	$search_count = mysqli_query($con,$sql);
 
@@ -229,10 +229,10 @@ if (!empty($search)) {
 								<label>Sort By : </label>
 								<div class="select">
 									<select name="sort" onchange="sortSelect()" id="sortbyname">
-										<option <?php echo 'firstname' == $sort_column ? 'selected' : ''; ?> value="firstname">First Name</option>
-										<option <?php echo 'lastname' == $sort_column ? 'selected' : ''; ?> value="lastname">Last Name</option>
-										<option <?php echo 'email' == $sort_column ? 'selected' : ''; ?> value="email">E-Mail</option>
-										<option <?php echo 'role' == $sort_column ? 'selected' : ''; ?> value="role">Roles</option>
+										<option <?php echo 'user_first_name' == $sort_column ? 'selected' : ''; ?> value="user_first_name">First Name</option>
+										<option <?php echo 'user_last_name' == $sort_column ? 'selected' : ''; ?> value="user_last_name">Last Name</option>
+										<option <?php echo 'user_email' == $sort_column ? 'selected' : ''; ?> value="user_email">E-Mail</option>
+										<option <?php echo 'role_name' == $sort_column ? 'selected' : ''; ?> value="role_name">Roles</option>
 
 									</select>
 
@@ -251,30 +251,30 @@ if (!empty($search)) {
 						<tbody>
 							<tr class="table-heading">
 								<th width="10px">S.no</th>
-								<th width="200px"><a href="../listusers?php echo $page; ?>&sort=firstname&order=<?php echo $sort_column == 'firstname' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="firstname-header" >First Name</a></th>
-								<th width="210px"><a href="../listusers?page=<?php echo $page; ?>&sort=lastname&order=<?php echo $sort_column == 'lastname' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="lastname-header">Last Name</a></th>
-								<th width="150px"><a href="../listusers?page=<?php echo $page; ?>&sort=email&order=<?php echo $sort_column == 'email' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="email-header">E-Mail</a></th>
-								<th width="113px"><a href="../listusers?page=<?php echo $page; ?>&sort=mobile&order=<?php echo $sort_column == 'mobile' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="mobile-header">Mobile</a></th>
-								<th width="97px"><a href="../listusers?page=<?php echo $page; ?>&sort=role&order=<?php echo $sort_column == 'role' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="role-header">Roles</a></th>
+								<th width="200px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_first_name&order=<?php echo $sort_column == 'user_first_name' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="firstname-header" >First Name</a></th>
+								<th width="210px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_last_name&order=<?php echo $sort_column == 'user_last_name' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="lastname-header">Last Name</a></th>
+								<th width="150px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_email&order=<?php echo $sort_column == 'user_email' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="email-header">E-Mail</a></th>
+								<th width="113px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_phone&order=<?php echo $sort_column == 'user_phone' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="mobile-header">Mobile</a></th>
+								<th width="97px"><a href="../listusers?page=<?php echo $page; ?>&sort=role_name&order=<?php echo $sort_column == 'role_name' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="role-header">Roles</a></th>
 								<th width="126px">Operations</th>
 							</tr>
 
 
 							<?php
 
-							$sql = "SELECT employees.Id,firstname,lastname,email,mobile,roles.role FROM `employees` left join roles on roles.id=employees.role_id where isDeleted=0  and (firstname LIKE '%$search%' or lastname LIKE '%$search%' or email LIKE '%$search%' or mobile LIKE '%$search%' or roles.role Like '%$search%' ) ORDER BY $sort_column $sort_order limit $row_per_page offset $first_row";
+							$sql = "SELECT user_id,user_first_name,user_last_name,user_email,user_phone,role_name FROM `em_users` left join em_roles on em_roles.role_id=em_users.user_role_id where user_isDeleted=0  and (user_first_name LIKE '%$search%' or user_last_name LIKE '%$search%' or user_email LIKE '%$search%' or user_phone LIKE '%$search%' or em_roles.role_name Like '%$search%' ) ORDER BY $sort_column $sort_order limit $row_per_page offset $first_row";
 
 							$result = mysqli_query($con, $sql);
 							$i = 1 + $first_row;
 
 							if (mysqli_num_rows($result)>0) {
 								while ($row = mysqli_fetch_assoc($result)) {
-									$id = $row['Id'];
-									$firstname = $row['firstname'];
-									$lastname = $row['lastname'];
-									$email = $row['email'];
-									$mobile = $row['mobile'];
-									$role = $row['role'];
+									$user_id = $row['user_id'];
+									$firstname = $row['user_first_name'];
+									$lastname = $row['user_last_name'];
+									$email = $row['user_email'];
+									$mobile = $row['user_phone'];
+									$role = $row['role_name'];
 
 
 									echo "

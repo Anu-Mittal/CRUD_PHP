@@ -19,7 +19,7 @@ $token1 = $_GET['t'];
 $password = '';
 $retype='';
 if (isset($token1)) {
-    $sql = "select * from employees where token='$token1'";
+    $sql = "select * from em_users where user_token='$token1'";
     $result = mysqli_query($con, $sql);
     $row = mysqli_fetch_assoc($result);
     if (empty($row)) {
@@ -27,8 +27,8 @@ if (isset($token1)) {
         die(mysqli_error($con));
     }
     else {
-        if (!(time() > $row['expiry_token'])  || !(time() <= ($row['expiry_token'] + 60*5))) {
-            $sql = "update `employees` set token=NULL,expiry_token=NULL where token='$token1'";
+        if (!(time() > $row['user_expiry_token'])  || !(time() <= ($row['user_expiry_token'] + 60*5))) {
+            $sql = "update `em_users` set user_token=NULL,user_expiry_token=NULL where user_token='$token1'";
             $result = mysqli_query($con, $sql);
             if(!$result){
             //     echo "print";
@@ -72,22 +72,22 @@ if (isset($_POST['submit'])) {
 // }
     
     if (empty($errors)) {
-        $sql = "update `employees` set password='$password',token=NULL,expiry_token=NULL where token='$token1'";
+        $sql = "update `em_users` set user_password='$password',user_token=NULL,user_expiry_token=NULL where user_token='$token1'";
         $result = mysqli_query($con, $sql);
         if ($result) {
             // echo "Data inserted successfully";
             $subject = "Password Changed Successfully!";
-            $name = $row['firstname'];
+            $name = $row['user_first_name'];
             
-            $sql = "select * from templates_info where temp_names='change_password'";
+            $sql = "select * from em_templates where template_names='change_password'";
             $result=mysqli_query($con,$sql);
 
             $row1= mysqli_fetch_assoc($result);
-            $body = $row1['templates'];
+            $body = $row1['template_body'];
 
             $body = str_replace("{{name}}",$name,$body);
 
-            sendEmail($row['name'], $row['email'], $subject, $body," ");
+            sendEmail($row['user_first_name'], $row['user_email'], $subject, $body," ");
             $_SESSION['status']="Password successfully changed.";
             header('location:../login');
 

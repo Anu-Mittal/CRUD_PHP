@@ -35,28 +35,28 @@ if (isset($_POST['submit'])) {
   }
 
   if (empty($errors)) {
-
-    $sql = "SELECT Id,firstname,email, role_id,password from `employees` where email='$email'";
+    // echo $email;
+    $sql = "SELECT user_id,user_first_name,user_email, user_role_id,user_password,user_gender,user_country_id,user_state_id,user_city_id from `em_users` where user_email='$email' and user_isDeleted=0";
     $result = mysqli_query($con, $sql);
-
+    
+    echo "print";
     if ($result) {
       if (mysqli_num_rows($result) == 1) {
         $row = mysqli_fetch_assoc($result);
 
-        if ($row['password'] == md5($password)) {
+        if ($row['user_password'] == md5($password)) {
 
           $login = true;
           $_SESSION['loggedIn'] = true;
-          $_SESSION['email'] = $row['email'];
-          $_SESSION['password'] = $row['password'];
-          $_SESSION['id'] = $row['Id'];
-          $_SESSION['firstname'] = $row['firstname'];
-          $_SESSION['role'] = $row['role_id'];
-          $_SESSION['gender'] = $row['gender'];
-          $_SESSION['role'] = $row['role_id'];
-          $_SESSION['country'] = $row['country'];
-          $_SESSION['state'] = $row['state'];
-          $_SESSION['city'] = $row['city'];
+          $_SESSION['email'] = $row['user_email'];
+          $_SESSION['password'] = $row['user_password'];
+          $_SESSION['id'] = $row['user_id'];
+          $_SESSION['firstname'] = $row['user_first_name'];
+          $_SESSION['role'] = $row['user_role_id'];
+          $_SESSION['gender'] = $row['user_gender'];
+          $_SESSION['country'] = $row['user_country_id'];
+          $_SESSION['state'] = $row['user_state_id'];
+          $_SESSION['city'] = $row['user_city_id'];
 
 
 
@@ -140,7 +140,7 @@ if (isset($_POST['submit'])) {
           ?>
 
           <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> username or password </div>
-          <form name="signupForm" id="myform" class="margin_bottom" method="post" onsubmit="return validateLogin()">
+          <form name="signupForm" id="myform" class="margin_bottom" method="post" onsubmit="return validateLogin()" >
 
 
             <div class="form-group">
