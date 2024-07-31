@@ -52,6 +52,12 @@ if (isset($_POST['submit'])) {
           $_SESSION['id'] = $row['Id'];
           $_SESSION['firstname'] = $row['firstname'];
           $_SESSION['role'] = $row['role_id'];
+          $_SESSION['gender'] = $row['gender'];
+          $_SESSION['role'] = $row['role_id'];
+          $_SESSION['country'] = $row['country'];
+          $_SESSION['state'] = $row['state'];
+          $_SESSION['city'] = $row['city'];
+
 
 
           if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {

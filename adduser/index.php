@@ -149,7 +149,7 @@ if (isset($_POST['submit'])) {
     $result = mysqli_query($con, $sql);
     if ($result) {
       // echo "Data inserted successfully";
-      header('location:/listusers');
+      header('location:../listusers');
     } else {
       echo "Error: " . $sql . "<br>" . die(mysqli_error($con));
     }
@@ -292,7 +292,7 @@ if (isset($_POST['submit'])) {
 
           <!-- form for insert data -->
 
-          <form class="form-edit" name="signupForm" id="myform" method="POST" action="../adduser" onsubmit="return validateForm()">
+          <form class="form-edit" name="signupForm" id="myform" method="POST"  onsubmit="return validateForm()">
             <!-- firstname -->
             <div class="form-row">
               <div class="form-label">
@@ -417,8 +417,8 @@ if (isset($_POST['submit'])) {
               </div>
               <div class="input-field">
                 <div class="select">
-                  <select disabled name="state" class="state-info form-control" id="stateId" onchange="fetchCity()">
-                    <option value="null">Select Your State</option>
+                  <select disabled name="state" class="state-info " id="stateId" onchange="fetchCity()">
+                    <option value="">Select Your State</option>
 
                   </select>
                   <p id="state-error" class="error"><?php echo isset($errors['state']) ? $errors['state'] : ''; ?></p>
@@ -476,7 +476,7 @@ if (isset($_POST['submit'])) {
             </div>
             <!-- news-letter -->
             <div class="news-letter">
-              <input type="checkbox" id="confirmation" name="confirmation" style="margin-left: 23px;"><span style="color: red;"> * </span>
+              <input type="checkbox" id="confirmation" name="confirmation" style="margin-left: 23px;" checked><span style="color: red;" > * </span>
               <label for="confirmation" style="color:#5d5252;;">
                 <span><small><b> I guaranted ,</b> that above filled information is correct . </small></span>
               </label>

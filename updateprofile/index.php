@@ -7,10 +7,13 @@ if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
 
     exit;
 }
+
+$id = $_SESSION['id'];
+// echo $_SESSION['id'];
 $email = $_SESSION['email'];
 
 $image_path = null;
-$id = $_SESSION['id'];
+
 $sql = "SELECT employees.Id,firstname,lastname,email,gender,country,Countries.countrynames,state,States.statenames,city,Cities.citynames,mobile,roles.role,image FROM `employees` left join roles on roles.id=employees.role_id left join Countries on employees.country=Countries.id left join States on employees.state=States.id left join Cities on employees.city=Cities.id where isDeleted=0 and employees.Id=$id";
 
 
@@ -19,7 +22,7 @@ $result = mysqli_query($con, $sql);
 $row = mysqli_fetch_assoc($result);
 
 // $id1=$row['Id'];
-$firstname = $row['firstname'];
+$firstname = $_SESSION['firstname'];
 $lastname = $row['lastname'];
 // $email = $row['email'];
 $mobile = $row['mobile'];
@@ -436,7 +439,7 @@ if (isset($_POST['delete-image']) && $_POST['delete-image'] == '1') {
 
                     <div class="container">
                         <div class="user-data">
-                            <p data-label="First Name"><span><?php echo $firstname ?></span></p>
+                            <p data-label="First Name"><span><?php echo $_SESSION['firstname'] ?></span></p>
                             <p data-label="Last Name"><span><?php echo $lastname ?></span></p>
                             <p data-label="Email"><span><?php echo $email ?></span></p>
                             <p data-label="Role"><span><?php echo $role; ?></span></p>
