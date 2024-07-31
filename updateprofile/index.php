@@ -3,17 +3,22 @@ include '../connect.php';
 
 session_start();
 if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] != true) {
-  header('Location:../login');
+    header('Location:../login');
 
-  exit;
+    exit;
 }
 $email = $_SESSION['email'];
 
 $image_path = null;
 $id = $_SESSION['id'];
 $sql = "SELECT employees.Id,firstname,lastname,email,gender,country,Countries.countrynames,state,States.statenames,city,Cities.citynames,mobile,roles.role,image FROM `employees` left join roles on roles.id=employees.role_id left join Countries on employees.country=Countries.id left join States on employees.state=States.id left join Cities on employees.city=Cities.id where isDeleted=0 and employees.Id=$id";
+
+
 $result = mysqli_query($con, $sql);
+
 $row = mysqli_fetch_assoc($result);
+
+// $id1=$row['Id'];
 $firstname = $row['firstname'];
 $lastname = $row['lastname'];
 // $email = $row['email'];
@@ -35,68 +40,76 @@ $role = $row['role'];
 
 // if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  if (isset($_FILES['profile']) ) {
-    $upload_dir = '../img/';
-    $file = $_FILES['profile'];
+    if (isset($_FILES['profile'])) {
+        $upload_dir = '../img/';
+        $file = $_FILES['profile'];
 
-    // Check if file was uploaded without errors
-    if ($file['error'] == UPLOAD_ERR_OK) {
-      $file_tmp_path = $file['tmp_name'];
-      $file_name = $file['name'];
-      $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
-
-      // Generate a unique name for the file
-      $new_file_name = uniqid() . '.' . $file_extension;
-      $dest_path = $upload_dir . $new_file_name;
-
-      // Move the file to the img/ folder
-      if (move_uploaded_file($file_tmp_path, $dest_path)) {
-        // Prepare an SQL update query
-        $sql = "UPDATE employees SET image = '$new_file_name' WHERE Id = $id";
-
-        $result = mysqli_query($con, $sql);
-
-        // Execute the query
-        if ($result) {
-          $image_path = $new_file_name;
-         
-        } else {
-          echo "Error updating record: ";
+        if (file_exists($upload_dir . $image_path && $image_path)) {
+            unlink($upload_dir . $image_path);
         }
-      } else {
-        echo "Error moving the uploaded file.";
-      }
+
+
+        // Check if file was uploaded without errors
+        if ($file['error'] == UPLOAD_ERR_OK) {
+            $file_tmp_path = $file['tmp_name'];
+            $file_name = $file['name'];
+            $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
+
+            // Generate a unique name for the file
+            $new_file_name = uniqid() . '.' . $file_extension;
+            $dest_path = $upload_dir . $new_file_name;
+
+            // Move the file to the img/ folder
+            if (move_uploaded_file($file_tmp_path, $dest_path)) {
+
+
+                // Prepare an SQL update query
+                $sql = "UPDATE employees SET image = '$new_file_name' WHERE Id = $id";
+
+                $result = mysqli_query($con, $sql);
+
+                // Execute the query
+                if ($result) {
+                    $image_path = $new_file_name;
+                    //   unlink($upload_dir . $image_to_delete);
+                }
+            } else {
+                echo "Error updating record: ";
+            }
+        } else {
+            echo "Error moving the uploaded file.";
+        }
     } else {
-      echo "Error uploading the file.";
+        echo "Error uploading the file.";
     }
-  }
+}
 
 
 
-  if (isset($_POST['delete-image']) && $_POST['delete-image'] == '1') {
+if (isset($_POST['delete-image']) && $_POST['delete-image'] == '1') {
     $upload_dir = '../img/';
     $image_to_delete = $image_path;
 
     // Prepare an SQL update query to set image to null
-  
+
     $sql = "UPDATE employees SET image = NULL WHERE Id = $id";
     // $sql = "DELETE from  employees WHERE Id = $id";
     $result = mysqli_query($con, $sql);
 
     // Execute the query
     if ($result) {
-      // Remove the image file from the server
-      // if (file_exists($upload_dir . $image_to_delete)) {
-      //   unlink($upload_dir . $image_to_delete);
-      // }
-      //unlink me folder / file
-      $image_path = null;
-      header('location:../updateprofile');
+        // Remove the image file from the server
+        if (file_exists($upload_dir . $image_to_delete)) {
+            unlink($upload_dir . $image_to_delete);
+        }
+        //   unlink(../img/);
+        $image_path = null;
+        header('location:../updateprofile');
     } else {
-      die(mysqli_error($con));
+        die(mysqli_error($con));
     }
-  }
 }
+
 ?>
 
 
@@ -112,9 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="../css/dashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -123,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <style>
-    /* .profile-pic img {
+        /* .profile-pic img {
       width: 120px;
       height: 120px;
       border-radius: 50%;
@@ -132,120 +143,188 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       display: block;
       margin: 0 auto 20px auto;
     } */
-    .profile-pic {
-        display: flex;
-        align-items: center;
-        border: 1px solid #ccc;
-        padding: 10px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .profile-pic {
-        margin: 13px 217px;
-        border: none;
-        /* padding-bottom: 10px; */
-    }
-
-    .profile-pic img {
-        height: 150px;
-        width: 170px;
-        border-radius: 50%;
-    }
-
-    #image-form {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-    }
-
-    .user-data {
-        border-collapse: collapse;
-        font-size: 18px;
-        text-align: left;
-    }
-
-    .user-data p {
-        display: table-row;
-    }
-
-    .user-data p::before {
-        content: attr(data-label);
-        display: table-cell;
-        font-weight: bold;
-        padding: 10px;
-        border: 1px solid #ddd;
-        background-color: #f2f2f2;
-    }
-
-    .user-data p span {
-        display: table-cell;
-        padding: 10px;
-        border: 1px solid #ddd;
-    }
-
-    .user-data p:nth-child(even) span {
-        background-color: #f9f9f9;
-    }
-
-    .btn {
-        display: flex;
-        justify-content: center;
-
-        align-items: center;
-        padding-top: 10px;
-    }
-
-    .submit-btn a {
-        color: white;
-        text-decoration: none;
 
 
-    }
 
-    .edit-btn {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 10px;
-        overflow: hidden;
-        background-color: #FF651B;
-        position: relative;
-        cursor: pointer;
-        transition: 0.3s;
-        margin-left: 27px;
-    }
+        .pop-up {
+            display: none;
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            background-color: rgba(0, 0, 0, 0.151);
+            border: none;
+        }
 
-    .edit-btn input {
-        position: absolute;
-        cursor: pointer;
-        height: 40px;
-        opacity: 0;
-        top: 0;
-        left: 0;
-    }
+        .pop-up .box {
+            box-shadow: -2px 2px 20px 3px rgba(0, 0, 0, 0.2);
+            height: 150px;
+            padding: 26px;
+            background-color: white;
+            border-radius: 10px;
+            font-size: 12px;
 
-    .edit-btn i {
-        margin: 0 !important;
-        padding-left: 8px;
-        cursor: pointer;
-        color: white;
-    }
+            text-align: center;
 
-    .edit-btn:hover {
-        background-color: #214139;
-    }
+        }
 
-    /* 
+        .box .buttons {
+            display: flex;
+            justify-content: space-evenly;
+            height: 53px;
+            padding-top: 20px;
+
+
+        }
+        #dlt:hover{
+            cursor:pointer;
+        }
+
+        .buttons #cancel {
+            border: none;
+            background-color: #ff651b;
+            color: white;
+            padding: 0px 16px;
+            border-radius: 5px;
+            font-size: 14px;
+
+        }
+
+        .buttons #dlt {
+            background-color: red;
+            width: 65px;
+            color: white;
+            font-size: 14px;
+            border-radius: 5px;
+            padding: 7px 54px 6px 16;
+        }
+
+        .delete:hover {
+            cursor: pointer;
+        }
+
+        #cancel:hover {
+            cursor: pointer;
+        }
+
+
+        .profile-pic {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-pic {
+            margin: 13px 217px;
+            border: none;
+            /* padding-bottom: 10px; */
+        }
+
+        .profile-pic img {
+            height: 150px;
+            width: 170px;
+            border-radius: 50%;
+        }
+
+        #image-form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        .user-data {
+            border-collapse: collapse;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        .user-data p {
+            display: table-row;
+        }
+
+        .user-data p::before {
+            content: attr(data-label);
+            display: table-cell;
+            font-weight: bold;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f2f2f2;
+        }
+
+        .user-data p span {
+            display: table-cell;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .user-data p:nth-child(even) span {
+            background-color: #f9f9f9;
+        }
+
+        .btn {
+            display: flex;
+            justify-content: center;
+
+            align-items: center;
+            padding-top: 10px;
+        }
+
+        .submit-btn a {
+            color: white;
+            text-decoration: none;
+
+
+        }
+
+        .edit-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #FF651B;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-left: 27px;
+        }
+
+        .edit-btn input {
+            position: absolute;
+            cursor: pointer;
+            height: 40px;
+            opacity: 0;
+            top: 0;
+            left: 0;
+        }
+
+        .edit-btn i {
+            margin: 0 !important;
+            padding-left: 8px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #214139;
+        }
+
+        /* 
     .fa-pencil:before {
       padding: 10px;
       padding-top: 10;
@@ -254,31 +333,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       color: white;
     } */
 
-    .delete-icon {
-        /* border: 1px solid black; */
-        padding: 8px;
-        margin-left: 30px;
-        margin-top: 14px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 24px;
-        background-color: #FF651B;
-        color: white;
-        cursor: pointer;
-        transition: 0.3s;
-        border: none;
-    }
+        .delete-icon {
+            /* border: 1px solid black; */
+            padding: 8px;
+            margin-left: 30px;
+            margin-top: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            background-color: #FF651B;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+        }
 
-    .delete-icon:hover {
-        background-color: #214139;
+        .delete-icon:hover {
+            background-color: #214139;
 
-    }
+        }
     </style>
+
 
 
 </head>
 
 <body>
+
+    <!-- delete confirmation -->
+    <div class="pop-up" id="modal">
+        <div class="box">
+            <h2> Would You like to Delete this record? </h2>
+            <div class="buttons">
+                <button id="cancel" onclick="return samePage()">Cancel</button>
+                <a id="dlt">Delete</a>
+            </div>
+        </div>
+    </div>
     <?php include "../header.php" ?>
 
     <div class="clear"></div>
@@ -326,15 +417,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="list-content">
 
                     <div class="profile-pic" style="height:150px;">
-                        <img src=<?php echo $image_path ? '../img/' . $image_path : '../images/userr.png'; ?> alt="img"
-                            id="profile-image">
-                        <form id="image-form"  method="POST" enctype="multipart/form-data">
+                        <img src=<?php echo $image_path ? '../img/' . $image_path : '../images/userr.png'; ?> alt="img" id="profile-image">
+                        <form id="image-form" method="POST" enctype="multipart/form-data">
                             <div class="edit-btn">
                                 <i class="fa-solid fa-pencil"></i>
                                 <input type="file" name="profile" id="select-file" onchange="uploadImage(event)">
                             </div>
                             <!-- <input type="submit" value="Upload"> -->
-                            <button type="button" class="delete-icon" id="delete-image">
+                            <button type="button" class="delete-icon delete" id="delete-image" onclick=myFunction()>
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                             <input type="hidden" name="delete-image" id="delete-image-input" value="0">
@@ -378,18 +468,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 
     <script>
-    function uploadImage(event) {
-        const image = event.target.files[0];
-        const img = document.getElementById("profile-image")
-        const imageUrl = URL.createObjectURL(image);
-        img.src = imageUrl;
-        document.getElementById('image-form').submit()
-    }
+        function uploadImage(event) {
+            const image = event.target.files[0];
+            const img = document.getElementById("profile-image")
+            const imageUrl = URL.createObjectURL(image);
+            img.src = imageUrl;
+            document.getElementById('image-form').submit()
+        }
+        //FOR DELETE CONFIRMATION
+        function myFunction() {
+            // console.log("hello");
+            document.getElementById('modal').style.display = "flex";
+            document.getElementById('dlt').addEventListener('click', function() {
+                document.getElementById('delete-image-input').value = '1';
+                document.getElementById('image-form').submit();
+            });
+        }
 
-    document.getElementById('delete-image').addEventListener('click', function() {
-        document.getElementById('delete-image-input').value = '1';
-        document.getElementById('image-form').submit();
-    });
+        function samePage() {
+            document.getElementById('modal').style.display = "none";
+            document.getElementById('cancel').href = "/updateprofile";
+
+        }
+
+
+
+        // document.getElementById('delete-image').addEventListener('click', function() {
+        //     document.getElementById('delete-image-input').value = '1';
+        //     document.getElementById('image-form').submit();
+        // });
     </script>
 
 

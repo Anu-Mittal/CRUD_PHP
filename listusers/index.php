@@ -304,7 +304,7 @@ if (!empty($search)) {
 						if ($page > 1) {
 							echo '<a class="a-no"  href="?page=' . ($page - 1) . '&sort=' . $sort_column . '&order=' . htmlspecialchars($sort_order) . '&search=' . htmlspecialchars($search) . '"> Prev</a>';
 						} else {
-							echo "<a class='disable'>&laquo; Prev</a>";
+							echo "<a class='disable'> Prev</a>";
 						}
 						for ($i = 1; $i <= $number_of_page; $i++) {
 							if ($i == $page) {
@@ -317,7 +317,7 @@ if (!empty($search)) {
 						if ($page < $number_of_page) {
 							echo '<a class="a-no" href="?page=' . ($page + 1) . '&sort=' . $sort_column . '&order=' . htmlspecialchars($sort_order) . '&search=' . htmlspecialchars($search) . '"> Next </a>';
 						} else {
-							echo "<a class='disable'> Next &raquo;</a>";
+							echo "<a class='disable'> Next</a>";
 						}
 						?>
 						<!-- <ul>

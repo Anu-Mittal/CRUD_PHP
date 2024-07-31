@@ -574,16 +574,16 @@ tr:last-child td{
 
 }
 .paginaton-div .disable{
-  background-color: darkgray;
+  /* background-color: darkgray; */
   /* border: gray solid 2px; */
-  color:  rgb(92, 89, 89);
+  /* color:  rgb(92, 89, 89); */
   cursor: default;
   font-weight: 600;
   transition: 0.3s;
 }
 .paginaton-div .disable:hover{
-  background-color: darkgray;
-  color: rgb(92, 89, 89);
+  background-color: white;
+  color:black;
 }
 
 
