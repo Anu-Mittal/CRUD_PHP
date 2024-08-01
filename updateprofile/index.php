@@ -95,7 +95,7 @@ if (isset($_POST['delete-image']) && $_POST['delete-image'] == '1') {
 
     // Prepare an SQL update query to set image to null
 
-    $sql = "UPDATE employees SET image = NULL WHERE Id = $id";
+    $sql = "UPDATE em_users SET user_image = NULL WHERE user_id = $id";
     // $sql = "DELETE from  employees WHERE Id = $id";
     $result = mysqli_query($con, $sql);
 
@@ -390,13 +390,13 @@ if (isset($_POST['delete-image']) && $_POST['delete-image'] == '1') {
                 <ul>
                     <li><a href="../dashboard" class="dashboard">Dashboard</a></li>
                     <li><a href="../listusers" class="user">Users</a>
-                        <ul class="submenu">
+                        <!-- <ul class="submenu">
                             <li><a href="">Mange Users</a></li>
 
-                        </ul>
+                        </ul> -->
 
                     </li>
-                    <li><a href="" class="Setting">Setting</a>
+                    <!-- <li><a href="" class="Setting">Setting</a>
                         <ul class="submenu">
                             <li><a href="">Chnage Password</a></li>
                             <li><a href="">Mange Contact Request</a></li>
@@ -412,7 +412,7 @@ if (isset($_POST['delete-image']) && $_POST['delete-image'] == '1') {
                             <li><a href="#">Manage Limits</a></li>
                         </ul>
 
-                    </li>
+                    </li> -->
                 </ul>
             </div>
             <div class="right_side_content">

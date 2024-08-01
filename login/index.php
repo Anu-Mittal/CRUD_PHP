@@ -20,16 +20,19 @@ $errors = [];
 if (isset($_POST['submit'])) {
 
   if (empty($_POST['email']) || empty($_POST['password'])) {
-    $errors['email'] = "Email is required";
+    $errors['email'] = false;
+    // $_SESSION['status'] = "Email is required.";
   } else {
     $email = $_POST['email'];
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      $errors['email'] = "Please enter valid Email ";
+      $errors['email'] = false;
+      // $_SESSION['status'] = "Please enter valid Email.";
     }
   }
 
   if (empty($_POST['password'])) {
-    $errors['password'] = "Password is required ";
+    $errors['password'] = false;
+    // $_SESSION['status'] = "Password is required.";
   } else {
     $password = $_POST['password'];
   }
@@ -38,7 +41,7 @@ if (isset($_POST['submit'])) {
     // echo $email;
     $sql = "SELECT user_id,user_first_name,user_email, user_role_id,user_password,user_gender,user_country_id,user_state_id,user_city_id from `em_users` where user_email='$email' and user_isDeleted=0";
     $result = mysqli_query($con, $sql);
-    
+
     echo "print";
     if ($result) {
       if (mysqli_num_rows($result) == 1) {
@@ -71,35 +74,11 @@ if (isset($_POST['submit'])) {
         $errors['email'] = "Email is not registered";
       }
     }
-  }
-  // }
-
-  else {
-    die(mysqli_error($con));
-  }
+    else {
+      die(mysqli_error($con));
+    }
+  } 
 }
-
-
-// $hash_password = md5($password);
-//   $sql = "SELECT * from `employees` where email='$email' && password='$hash_password'";
-//   $result = mysqli_query($con, $sql);
-
-//   if (mysqli_num_rows($result) == 1) {
-//   echo "hello";
-//     $row = mysqli_fetch_assoc($result);
-//     if ($row['email'] === $email && $row['password'] === $hash_password) {
-//       echo "Logged In";
-//       $_SESSION['email'] = $row['email'];
-//       $_SESSION['firstname'] = $row['firstname'];
-//       $_SESSION['id'] = $row['Id'];
-//       header("Location: dashboard.php");
-//       exit();
-//     }
-//  }
-
-
-
-// }
 
 ?>
 
@@ -120,6 +99,14 @@ if (isset($_POST['submit'])) {
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+  <style>
+    .error {
+      color: red;
+      font-size: 12px;
+      padding-top: 10px;
+      padding-left: 10px;
+    }
+  </style>
 </head>
 
 <body>
@@ -133,36 +120,49 @@ if (isset($_POST['submit'])) {
         <div class="outer_div">
 
           <h2>Admin <span>Login</span></h2>
+          <?php if (!empty($_SESSION['status'])) : ?>
+            <div class="error-message-div error-msg" style="margin-bottom:10px;"><?php echo $_SESSION['status'];
+                                                                                  unset($_SESSION['status']); ?></div>
+          <?php endif; ?>
+
+     
+          <!-- <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> username or password </div> -->
           <?php
-          if (!empty($errors)) {
-            echo "<div class='error-message-div error-msg'><img src='../images/unsucess-msg.png'><strong>Invalid!</strong> username or password</div>";
-          }
-          ?>
+                    if (!empty($errors)) {
+                        echo "<div class='error-message-div error-msg'><img src='../images/unsucess-msg.png'><strong>Invalid!</strong> username or password</div>";
+                    }
+                    ?>
 
-          <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> username or password </div>
-          <form name="signupForm" id="myform" class="margin_bottom" method="post" onsubmit="return validateLogin()" >
+
+
+
+          <!-- form -->
+          <form name="signupForm" id="myform" class="margin_bottom" method="post" onsubmit="return validateLogin()" novalidate>
 
 
             <div class="form-group">
-              <label for="exampleInputEmail1">Email</label>
-              <input type="email" class="form-control" name="email" id="email" value="<?php echo $email; ?>">
-
+              <label for="exampleInputEmail1">Email <span>*</span></label>
+              <input type="email" class="form-control" name="email" id="email" placeholder="Enter Email" value="<?php echo $email; ?>">
+              <p id='email-error' class='error'><?php echo (isset($errors['email'])) ? $errors['email'] : ''; ?></p>
             </div>
+
+
             <div class="form-group">
-              <label for="exampleInputPassword1">Password</label>
-              <input type="password" class="form-control" name="password" id="password" value="<?php echo $password; ?>">
+              <label for="exampleInputPassword1">Password <span>*</span></label>
+              <input type="password" class="form-control" name="password" id="password" placeholder="Enter Password" value="<?php echo $password; ?>">
+              <p id='password-error' class='error'><?php echo (isset($errors['password'])) ? $errors['password'] : ''; ?></p>
               <h5 style="font-size: 12px;text-align: end;">
                 <a href="../passwordreset" style="color:blue;"> forget password?</a>
               </h5>
             </div>
-            <!-- <h5></h5> -->
+
             <button type="submit" name="submit" class="btn_login">Login</button>
 
             <div style=" padding:10px;padding-top: 10px;">
               <h5><span>Do you want to create an Account? </span><a href="../signup" style="color: blue;">SignUp</a>
               </h5>
-
             </div>
+
           </form>
         </div>
       </div>
@@ -171,27 +171,31 @@ if (isset($_POST['submit'])) {
 
     <script>
       function validateLogin() {
+        // return true;
         var isValid = true;
 
         var myform = document.getElementById("myform");
         var emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
         var email = document.forms["signupForm"]["email"].value;
         var password = document.forms["signupForm"]["password"].value;
-        if (email == "") {
 
+        if (email == "") {
+          document.getElementById("email-error").innerText = "Email is required.";
           isValid = false;
-        } else if (!email.match(emailPattern)) {
+        }
+         else if (!email.match(emailPattern)) {
+          document.getElementById("email-error").innerText = "Enter valid email.";
           isValid = false;
         }
 
         if (password == "") {
-
+          document.getElementById("password-error").innerText = "Password is required.";
           isValid = false;
 
         }
-        if (!isValid) {
-          document.getElementById('msg').style.display = 'block';
-        }
+        // if (!isValid) {
+        //   document.getElementById('msg').style.display = 'block';
+        // }
         return isValid;
       }
     </script>

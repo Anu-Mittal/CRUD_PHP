@@ -10,7 +10,7 @@ $myid = $_SESSION['id'];
 $sql1 = "SELECT * from `em_users` where user_id=$myid";
 $result1 = mysqli_query($con, $sql1);
 $row1 = mysqli_fetch_assoc($result1);
-$role1 = $row1['role_id'];
+$role1 = $row1['user_role_id'];
 
 
 
@@ -150,7 +150,7 @@ if (isset($_POST['submit'])) {
     $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>.]{8,}$/';
 
     if (!preg_match($pattern, $c_password)) {
-      $errors['password'] = "Password must be of least 8 characters, contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
+      $errors['password'] = "Password must fulfill all conditions.";
     }
   } else {
     $c_password = $password;
@@ -253,13 +253,13 @@ if (isset($_POST['submit'])) {
         <ul>
           <li><a href="../dashboard" class="dashboard">Dashboard</a></li>
           <li><a href="../listusers" class="user">Users</a>
-            <ul class="submenu">
+            <!-- <ul class="submenu">
               <li><a href="">Mange Users</a></li>
 
-            </ul>
+            </ul> -->
 
           </li>
-          <li><a href="" class="Setting">Setting</a>
+          <!-- <li><a href="" class="Setting">Setting</a>
             <ul class="submenu">
               <li><a href="">Chnage Password</a></li>
               <li><a href="">Mange Contact Request</a></li>
@@ -275,7 +275,7 @@ if (isset($_POST['submit'])) {
               <li><a href="#">Manage Limits</a></li>
             </ul>
 
-          </li>
+          </li> -->
         </ul>
       </div>
       <div class="right_side_content">
@@ -283,10 +283,10 @@ if (isset($_POST['submit'])) {
         <div class="list-contet">
           <?php
           if (!empty($errors)) {
-            echo "<div class='error-message-div error-msg'><img src='../images/unsucess-msg.png'><strong>Error!</strong> Fields are not filled</div>";
+            echo "<div class='error-message-div error-msg'><img src='../images/unsucess-msg.png'>Enter Details Correctly";
           }
           ?>
-          <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Error!</strong>Fields are not filled y </div>
+          <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png">Enter Details Correctly </div>
           <!-- form -->
           <form class="form-edit" name="signupForm" method="post" id="myform" onsubmit="return validateForm()">
             <!-- firstname -->
@@ -358,7 +358,7 @@ if (isset($_POST['submit'])) {
                     $sql1 = "select * from `em_roles`";
                     $result1 = mysqli_query($con, $sql1);
                     while ($row1 = mysqli_fetch_array($result1)) {
-                      if ($role == $row1['id']) {
+                      if ($role == $row1['role_id']) {
                         echo "<option selected value='$row1[role_id]'>$row1[role_name]</option>";
                       } else {
                         echo "<option value='$row1[role_id]'>$row1[role_name]</option>";
@@ -606,7 +606,8 @@ if (isset($_POST['submit'])) {
 
 
     //validations
-    function avalidateForm() {
+    function validateForm() {
+      return true;
       var isValid = true;
 
       var myform = document.getElementById("myform");
@@ -700,7 +701,7 @@ if (isset($_POST['submit'])) {
         document.getElementById("password-error").innerText = "Password is required.";
         isValid = false;
       } else if (!password.match(passwordPattern)) {
-        document.getElementById("password-error").innerText = "Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one numeric digit, and one special character";
+        document.getElementById("password-error").innerText = "Password must fulfill all conditions.";
         isValid = false;
       }
 

@@ -1,6 +1,6 @@
 <div class="header">
     <div class="wrapper">
-        <div class="logo"><a href="#"><img src="../images/logo.png"></a></div>
+        <div class="logo"><img src="../images/logo.png"></div>
 
 
         <div class="right_side">
@@ -13,8 +13,8 @@
             <ul>
                 <li id="dashboard"><a href="../dashboard" >Dashboard</a></li>
                 <li  id="listusers"><a href="../listusers">Users</a></li>
-                <li><a href=" agentloclist.php ">Setting</a></li>
-                <li><a href=" geoloclist.php ">Configuration</a></li>
+                <!-- <li><a href=" agentloclist.php ">Setting</a></li>
+                <li><a href=" geoloclist.php ">Configuration</a></li> -->
             </ul>
 
         </div>

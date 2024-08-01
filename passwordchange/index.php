@@ -6,7 +6,7 @@ include '../email-service.php';
 session_start();
 
 if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
-    header('Location: dashboard.php');
+    header('Location: ../dashboard');
     exit;
 }
 
@@ -14,63 +14,67 @@ if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
 //   header('Location:../login');
 //   exit;
 // }
-$_SESSION['status']="";
+$_SESSION['status'] = "";
 $token1 = $_GET['t'];
 $password = '';
-$retype='';
+$retype = '';
 if (isset($token1)) {
     $sql = "select * from em_users where user_token='$token1'";
     $result = mysqli_query($con, $sql);
     $row = mysqli_fetch_assoc($result);
     if (empty($row)) {
-        echo "<h1>Invalid URL</h1>";
+        // echo "<h1>Invalid URL</h1>";
+        $_SESSION['status'] = "Token expired.";
+        header("location:../login");
+        // $_SESSION['status']="Password Successfully Changed.";
         die(mysqli_error($con));
-    }
-    else {
-        if (!(time() > $row['user_expiry_token'])  || !(time() <= ($row['user_expiry_token'] + 60*5))) {
+    } else {
+        if (!(time() > $row['user_expiry_token'])  || !(time() <= ($row['user_expiry_token'] + 60 * 5))) {
             $sql = "update `em_users` set user_token=NULL,user_expiry_token=NULL where user_token='$token1'";
             $result = mysqli_query($con, $sql);
-            if(!$result){
-            //     echo "print";
+            if (!$result) {
+                //     echo "print";
 
-            // }
-        // } else {
-            // echo "expire time";
-            die(mysqli_error($con));
+                // }
+                // } else {
+                // echo "expire time";
+                die(mysqli_error($con));
+            }
         }
     }
-    }}
+}
 
 if (isset($_POST['submit'])) {
     $errors = [];
     if (empty($_POST['password'])) {
-        $errors['password'] = "Password is required.";
-        $_SESSION['status']="Password is required.";
+        $errors['password'] = false;
+        $_SESSION['status'] = "Password is required.";
+        // unset($_SESSION['status']);
     } else {
         $password = $_POST['password'];
         $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>.]{8,}$/';
-
         if (!preg_match($pattern, $password)) {
-            $errors['password'] = "Password must fulfill all conditions.";
+            $errors['password'] = false;
             $_SESSION['status'] = "Password must fulfill all conditions.";
         }
     }
     if (empty($_POST['retype'])) {
-        if(!empty($_POST['password'])){
-        $errors['retype'] = 'Retype Password is required.';
-        $_SESSION['status'] = ' Retype Password is required.';
-    }} {
+        if (!empty($_POST['password'])) {
+            $errors['retype'] = false;
+            $_SESSION['status'] = ' Retype Password is required.';
+        }
+    } else {
         $retype = $_POST['retype'];
         if ($retype != $password) {
-            $errors['retype'] = 'Password not match.';
+            $errors['retype'] = false;
             $_SESSION['status'] = 'Password not match.';
-        } 
+        }
         // else {
         //     $password = md5($password);
         // }
     }
-// }
-    
+    // }
+
     if (empty($errors)) {
         $sql = "update `em_users` set user_password='$password',user_token=NULL,user_expiry_token=NULL where user_token='$token1'";
         $result = mysqli_query($con, $sql);
@@ -78,21 +82,25 @@ if (isset($_POST['submit'])) {
             // echo "Data inserted successfully";
             $subject = "Password Changed Successfully!";
             $name = $row['user_first_name'];
-            
-            $sql = "select * from em_templates where template_names='change_password'";
-            $result=mysqli_query($con,$sql);
 
-            $row1= mysqli_fetch_assoc($result);
+            $sql = "select * from em_templates where template_name='change_password'";
+            $result = mysqli_query($con, $sql);
+
+            $row1 = mysqli_fetch_assoc($result);
             $body = $row1['template_body'];
 
-            $body = str_replace("{{name}}",$name,$body);
+            $body = str_replace("{{name}}", $name, $body);
+            // unset($_SESSION['status']);
+            if(!empty($token1)){
+            $_SESSION['status'] = "Password successfully changed.";
+            sendEmail($row['user_first_name'], $row['user_email'], $subject, $body, " ");
 
-            sendEmail($row['user_first_name'], $row['user_email'], $subject, $body," ");
-            $_SESSION['status']="Password successfully changed.";
-            header('location:../login');
-
+            header('location:../login');}
         } else {
-            echo "Error: " . $sql . "<br>" . die(mysqli_error($con));
+            $_SESSION['status'] = "Did not update password, something went wrong.";
+            header("Location: change-password");
+            exit(0);
+            // echo "Error: " . $sql . "<br>" . die(mysqli_error($con));
         }
     }
 }
@@ -167,6 +175,12 @@ if (isset($_POST['submit'])) {
             opacity: 1 !important;
 
         }
+
+        .error {
+            color: red;
+            font-size: 12px;
+            padding: 10px;
+        }
     </style>
 </head>
 
@@ -181,23 +195,20 @@ if (isset($_POST['submit'])) {
             </div>
             <div class="box">
                 <div class="outer_div">
-                <?php
-                    if (!empty($_SESSION['status'])) {
-                        echo "<div class='error-message-div error-msg'>" .$_SESSION['status']. "</div>";
-                    }
-                    ?>
+
                     <h2> Update<span> Password</span></h2>
+                    <?php if (!empty($_SESSION['status'])) : ?>
+                        <div class="error-message-div error-msg" style="margin-bottom:10px;"><?php echo $_SESSION['status'];
+                                                                                                unset($_SESSION['status']); ?></div>
+                    <?php endif; ?>
 
                     <!-- <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> password or not matched </div> -->
 
-                    <form name="signupForm" id="myform" class="margin_bottom" role="form" method="POST" onsubmit="return validateReset()">
-                        <!-- <input type="hidden" name="password_token" value="<?php if (isset($_GET['token'])) {
-                                                                                    echo $_GET['token'];
-                                                                                } ?>"> -->
+                    <form name="updateForm" id="myform" class="margin_bottom" role="form" method="POST" onsubmit="return validateChange()" novalidate>
 
                         <div class="form-group tooltip">
                             <label>Password <span>*</span></label>
-                            <input type="password" class="search-box pass_input" name="password" placeholder="Enter New Password" id="password" onkeyup="validatePassword()" value="<?php echo $password?>" />
+                            <input type="password" class="search-box pass_input" name="password" placeholder="Enter New Password" id="password" onkeyup="validatePassword()" value="<?php echo $password ?>" />
                             <span class="tooltiptext">
                                 <ul>
                                     <li class="pass_len">at least 8 characters </li>
@@ -207,7 +218,8 @@ if (isset($_POST['submit'])) {
                                     <li class="pass_special">one special character.</li>
                                 </ul>
                             </span>
-                            
+                            <p id='password-error' class='error'><?php echo (isset($errors['password'])) ? $errors['password'] : ''; ?></p>
+
                         </div>
 
 
@@ -218,8 +230,9 @@ if (isset($_POST['submit'])) {
                         </div> -->
 
                         <div class="form-group">
-                            <label for="confirm_password">Confirm Password <span>*</span></label>
-                            <input type="password" class="form-control" name="retype" id="retype" placeholder="Confirm Password"  value="<?php echo $retype;  ?>"/>
+                            <label for="retype">Confirm Password <span>*</span></label>
+                            <input type="password" class="form-control" name="retype" id="retype" placeholder="Confirm Password" value="<?php echo $retype;  ?>" />
+                            <p id='retype-error' class='error'><?php echo (isset($errors['retype'])) ? $errors['retype'] : ''; ?></p>
                         </div>
 
                         <button type="submit" name="submit" class="btn_login">Reset</button>
@@ -228,6 +241,8 @@ if (isset($_POST['submit'])) {
             </div>
         </div>
     </div>
+
+
     <script>
         //validatePassword
         function highlightErrors(errorClass) {
@@ -285,39 +300,45 @@ if (isset($_POST['submit'])) {
 
 
 
-        function validateReset() {
-            return true;
+        function validateChange() {
+            // return true;
 
             var isValid = true;
 
 
             var myform = document.getElementById("myform");
             var passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>.]{8,}$/;
-            var password = document.forms["signupForm"]["password"].value;
-            var retype = document.forms["signupForm"]["retype"].value;
+            var password = document.forms["updateForm"]["password"].value;
+            var retype = document.forms["updateForm"]["retype"].value;
+
+            document.getElementById("password-error").innerText = "";
+            document.getElementById("retype-error").innerText = "";
 
 
             if (password == "") {
+                document.getElementById("password-error").innerText = "Password is required.";
                 isValid = false;
             } else if (!password.match(passwordPattern)) {
+                document.getElementById("password-error").innerText = "Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one numeric digit, and one special character";
                 isValid = false;
             }
 
             if (retype == "") {
+                document.getElementById("retype-error").innerText = " Confirmation is required.";
                 isValid = false;
             } else if (retype != password) {
-
+                document.getElementById("retype-error").innerText = "Not matched with password ";
                 isValid = false;
             }
 
 
-            if (!isValid) {
-                document.getElementById('msg').style.display = 'block';
+            // if (!isValid) {
+            //     document.getElementById('msg').style.display = 'block';
 
-            }
+            // }
 
             return isValid;
-            document.getElementById('sucess').style.display='block';
+            // document.getElementById('sucess').style.display = 'block';
         }
     </script>
 </body>

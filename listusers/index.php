@@ -67,7 +67,7 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
 
 // ******************Combination of searching sorting pagination*******************************
 // SQL Query with Pagination, Sorting, and Searching
-$sql = "SELECT user_id,user_first_name,user_last_name,user_email,user_phone,role_name FROM `em_users` left join em_roles on em_roles.role_id=em_users.role_id where user_isDeleted=0 ";
+$sql = "SELECT user_id,user_first_name,user_last_name,user_email,user_phone,role_name FROM `em_users` left join em_roles on em_roles.role_id=em_users.user_role_id where user_isDeleted=0 ";
 
 if (!empty($search)) {
 	$sql .= " AND (user_first_name LIKE '%$search%' OR user_last_name LIKE '%$search%' OR user_email LIKE '%$search%' OR user_phone LIKE '%$search%' Or role_name like '%$search%')";
@@ -194,13 +194,13 @@ if (!empty($search)) {
 				<ul>
 					<li><a href="../dashboard" class="dashboard">Dashboard</a></li>
 					<li><a href="../listusers" class="user">Users</a>
-						<ul class="submenu">
+						<!-- <ul class="submenu">
 							<li><a href="">Mange Users</a></li>
 
-						</ul>
+						</ul> -->
 
 					</li>
-					<li><a href="" class="Setting">Setting</a>
+					<!-- <li><a href="" class="Setting">Setting</a>
 						<ul class="submenu">
 							<li><a href="">Chnage Password</a></li>
 							<li><a href="">Mange Contact Request</a></li>
@@ -216,7 +216,7 @@ if (!empty($search)) {
 							<li><a href="#">Manage Limits</a></li>
 						</ul>
 
-					</li>
+					</li> -->
 				</ul>
 			</div>
 			<div class="right_side_content">
@@ -251,11 +251,11 @@ if (!empty($search)) {
 						<tbody>
 							<tr class="table-heading">
 								<th width="10px">S.no</th>
-								<th width="200px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_first_name&order=<?php echo $sort_column == 'user_first_name' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="firstname-header" >First Name</a></th>
-								<th width="210px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_last_name&order=<?php echo $sort_column == 'user_last_name' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="lastname-header">Last Name</a></th>
-								<th width="150px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_email&order=<?php echo $sort_column == 'user_email' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="email-header">E-Mail</a></th>
-								<th width="113px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_phone&order=<?php echo $sort_column == 'user_phone' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="mobile-header">Mobile</a></th>
-								<th width="97px"><a href="../listusers?page=<?php echo $page; ?>&sort=role_name&order=<?php echo $sort_column == 'role_name' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="role-header">Roles</a></th>
+								<th width="200px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_first_name&order=<?php echo $sort_column == 'user_first_name' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="user_first_name-header" >First Name</a></th>
+								<th width="210px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_last_name&order=<?php echo $sort_column == 'user_last_name' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="user_last_name-header">Last Name</a></th>
+								<th width="150px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_email&order=<?php echo $sort_column == 'user_email' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="user_email-header">E-Mail</a></th>
+								<th width="113px"><a href="../listusers?page=<?php echo $page; ?>&sort=user_phone&order=<?php echo $sort_column == 'user_phone' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="user_phone-header">Mobile</a></th>
+								<th width="150px"><a href="../listusers?page=<?php echo $page; ?>&sort=role_name&order=<?php echo $sort_column == 'role_name' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>" id="role_name-header">Roles</a></th>
 								<th width="126px">Operations</th>
 							</tr>
 
@@ -286,8 +286,8 @@ if (!empty($search)) {
 							<td>" . $mobile . "</td>
 							<td>" . $role . "</td>
 							<td>
-                            <a href ='../updateuser?uid=$id' class='update' style='margin-left:10px;padding-left:10px;color:#FF651B;width:10px;gap:15px; align-content:center; '><i class='fa-solid fa-pencil'></i></a>
-                            <a onclick='myFunction($id)' class='delete' style='border:none;color:red;width:10px;'><i class='fa-solid fa-xmark'></i></a>
+                            <a href ='../updateuser?uid=$user_id' class='update' style='margin-left:10px;padding-left:10px;color:#FF651B;width:10px;gap:15px; align-content:center; '><i class='fa-solid fa-pencil'></i></a>
+                            <a onclick='myFunction($user_id)' class='delete' style='border:none;color:red;width:10px;'><i class='fa-solid fa-xmark'></i></a>
                             </td>
                             </tr>";
 								}
@@ -308,7 +308,7 @@ if (!empty($search)) {
 						}
 						for ($i = 1; $i <= $number_of_page; $i++) {
 							if ($i == $page) {
-								echo '<a class="a-no active" href="../listusers?page=' . $i . '&sort=' . $sort_column . '&order=' . htmlspecialchars($sort_order) . '&search=' . htmlspecialchars($search) . '">' . $i . ' </a>';
+								echo '<a class="a-no active" >' . $i . ' </a>';
 							} else {
 
 								echo '<a class="a-no" href="../listusers?page=' . $i . '&sort=' . $sort_column . '&order=' . htmlspecialchars($sort_order) . '&search=' . htmlspecialchars($search) . '">' . $i . ' </a>';

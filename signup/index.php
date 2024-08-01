@@ -109,11 +109,11 @@ if (isset($_POST['submit'])) {
         }
     }
 
-    if (empty($_POST['retype'])) {
-        $errors['retype'] = "Confirmation of password is required.";
-    } else {
-        $retype = $password;
-    }
+    // if (empty($_POST['retype'])) {
+    //     $errors['retype'] = "Confirmation of password is required.";
+    // } else {
+    //     $retype = $password;
+    // }
 
 
     if (empty($errors)) {
@@ -282,16 +282,16 @@ if (isset($_POST['submit'])) {
 
                     <h2> User <span> Sign-Up</span></h2>
                     <?php
-                    // if (!empty($errors)) {
-                    //     echo "<div class='error-message-div error-msg'><img src='../images/unsucess-msg.png'><strong>Invalid!</strong> username or password</div>";
-                    // }
+                    if (!empty($errors)) {
+                        echo "<div class='error-message-div error-msg'><img src='../images/unsucess-msg.png'>Enter Valid Details</div>";
+                    }
                     ?>
 
-                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Invalid!</strong> Details </div>
+                    <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png">Enter Valid Details </div>
                     <form name="signupForm" id="myform" class="margin_bottom" method="post" onsubmit="return validateSignup()" novalidate>
 
 
-                        <form class="form-edit" name="signupForm" id="myform" method="POST" action="../adduser" onsubmit="return validateForm()">
+                        <!-- <form class="form-edit" name="signupForm" id="myform" method="POST" action="../adduser" onsubmit="return validateForm()"> -->
                             <!-- firstname -->
                             <div class="form-group">
                                 <label for="exampleInputEmail1">First Name : <span>*</span></label>
@@ -360,17 +360,17 @@ if (isset($_POST['submit'])) {
                                         $result1 = mysqli_query($con, $sql1);
                                         while ($row1 = mysqli_fetch_array($result1)) {
 
-                                            if (($role == $row1['id'])) {
+                                            if (($role == $row1['role_id'])) {
 
-                                                echo "<option selected value='$row1[id]'>$row1[role]</option>";
+                                                echo "<option selected value='$row1[role_id]'>$row1[role_name]</option>";
                                             } else {
-                                                // if ($row1['id'] == 2) {
-                                                //     echo "<option selected value='$row1[id]'>$row1[role]</option>";
-                                                // } else {
-                                                    echo "<option value='$row1[id]'>$row1[role]</option>";
+                                                if ($row1['role_id'] == 2) {
+                                                    echo "<option selected value='$row1[role_id]'>$row1[role_name]</option>";
+                                                } else {
+                                                    echo "<option value='$row1[role_id]'>$row1[role_name]</option>";
                                                 }
                                             }
-                                        // }
+                                        }
                                         ?>
                                     </select>
                                     <p id="role-error" class="error"><?php echo isset($errors['role']) ? $errors['role'] : ''; ?></p>
@@ -390,13 +390,13 @@ if (isset($_POST['submit'])) {
                                     <select name="country" class="country-info" id="countryId" onchange="fetchState()">
                                         <option value="">Select Your Country</option>
                                         <?php
-                                        $sql1 = "select * from `Countries`";
+                                        $sql1 = "select * from `em_countries`";
                                         $result1 = mysqli_query($con, $sql1);
                                         while ($row1 = mysqli_fetch_array($result1)) {
-                                            if ($country == $row1['id']) {
-                                                echo "<option selected value='$row1[id]'>$row1[countrynames]</option>";
+                                            if ($country == $row1['country_id']) {
+                                                echo "<option selected value='$row1[country_id]'>$row1[country_name]</option>";
                                             } else {
-                                                echo "<option value='$row1[id]'>$row1[countrynames]</option>";
+                                                echo "<option value='$row1[country_id]'>$row1[country_name]</option>";
                                             }
                                         }
                                         ?>
@@ -417,13 +417,13 @@ if (isset($_POST['submit'])) {
                                     <select disabled name="state" class="state-info" id="stateId" onchange="fetchCity()">
                                         <option value="<?php echo $state ?>">Select Your State</option>
                                         <?php
-                                        $sql1 = "select * from `States`";
+                                        $sql1 = "select * from `em_states`";
                                         $result1 = mysqli_query($con, $sql1);
                                         while ($row1 = mysqli_fetch_array($result1)) {
-                                            if ($state == $row1['id']) {
-                                                echo "<option selected value='$row1[id]'>$row1[statenames]</option>";
+                                            if ($state == $row1['state_id']) {
+                                                echo "<option selected value='$row1[state_id]'>$row1[state_name]</option>";
                                             } else {
-                                                echo "<option value='$row1[id]'>$row1[statenames]</option>";
+                                                echo "<option value='$row1[state_id]'>$row1[state_name]</option>";
                                             }
                                         }
                                         ?>
@@ -445,13 +445,13 @@ if (isset($_POST['submit'])) {
                                     <select disabled name="city" class="city-info" id="cityId">
                                         <option value="">Select Your City</option>
                                         <?php
-                                        $sql1 = "select * from `Cities`";
+                                        $sql1 = "select * from `em_cities`";
                                         $result1 = mysqli_query($con, $sql1);
                                         while ($row1 = mysqli_fetch_array($result1)) {
-                                            if ($city == $row1['id']) {
-                                                echo "<option selected value='$row1[id]'>$row1[citynames]</option>";
+                                            if ($city == $row1['city_id']) {
+                                                echo "<option selected value='$row1[city_id]'>$row1[city_name]</option>";
                                             } else {
-                                                echo "<option value='$row1[id]'>$row1[citynames]</option>";
+                                                echo "<option value='$row1[city_id]'>$row1[city_name]</option>";
                                             }
                                         }
                                         ?>
@@ -489,14 +489,14 @@ if (isset($_POST['submit'])) {
                             </div> -->
 
                             <!--Retype password -->
-                            <div class="form-group">
+                            <!-- <div class="form-group">
 
                                 <label>Retype Password: <span>*</span></label>
 
                                 <input type="password" class="search-box" name="retype" placeholder="Re-type Password" id="retype" value="<?php echo $retype; ?>" />
                                 <p id='retype-error' class='error'><?php echo (isset($errors['retype'])) ? $errors['retype'] : ''; ?></p>
 
-                            </div>
+                            </div> -->
 
                             <!--save button -->
                             <button type="submit" name="submit" class="btn_login">Sign-Up</button>
@@ -696,7 +696,7 @@ if (isset($_POST['submit'])) {
                 var city = document.forms["signupForm"]["city"].value;
                 var passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>.]{8,}$/;
                 var password = document.forms["signupForm"]["password"].value;
-                var retype = document.forms["signupForm"]["retype"].value;
+                // var retype = document.forms["signupForm"]["retype"].value;
                 // var confirmation = document.forms["signupForm"]["confirmation"].value;
                 // console.log("here");
                 // return false;
@@ -711,7 +711,7 @@ if (isset($_POST['submit'])) {
                 document.getElementById("state-error").innerText = "";
                 document.getElementById("city-error").innerText = "";
                 document.getElementById("password-error").innerText = "";
-                document.getElementById("retype-error").innerText = "";
+                // document.getElementById("retype-error").innerText = "";
                 // document.getElementById("confirmation-error").innerText = "";
 
 
@@ -729,7 +729,7 @@ if (isset($_POST['submit'])) {
                     document.getElementById("email-error").innerText = "Email is required.";
                     isValid = false;
                 } else if (!email.match(emailPattern)) {
-                    document.getElementById("email-error").innerText = "Please enter a valid email address.";
+                    document.getElementById("email-error").innerText = "Enter valid email.";
                     isValid = false;
                 }
 
@@ -769,26 +769,26 @@ if (isset($_POST['submit'])) {
                     document.getElementById("password-error").innerText = "Password is required.";
                     isValid = false;
                 } else if (!password.match(passwordPattern)) {
-                    document.getElementById("password-error").innerText = "Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one numeric digit, and one special character";
+                    document.getElementById("password-error").innerText = "Password must fulfill all conditions";
                     isValid = false;
                 }
 
-                if (retype == "") {
-                    document.getElementById("retype-error").innerText = " Confirmation of password is required.";
-                    isValid = false;
-                } else if (retype != password) {
-                    document.getElementById("retype-error").innerText = "It is not matched with above written password ";
-                    isValid = false;
-                }
+                // if (retype == "") {
+                //     document.getElementById("retype-error").innerText = " Confirmation is required.";
+                //     isValid = false;
+                // } else if (retype != password) {
+                //     document.getElementById("retype-error").innerText = "Not matched with password ";
+                //     isValid = false;
+                // }
 
                 // if (confirmation == "") {
                 //   document.getElementById("confirmation-error").innerText = "Must checked.";
                 //   isValid = false;
                 // }
 
-                // if (!isValid) {
-                //     document.getElementById('msg').style.display = 'block';
-                // }
+                if (!isValid) {
+                    document.getElementById('msg').style.display = 'block';
+                }
 
                 return isValid;
             }

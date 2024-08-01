@@ -73,7 +73,7 @@ if (isset($_POST['submit'])) {
     $mobile = $_POST['mobile'];
     $pattern = '/^\d{10}$/';
     if (!preg_match($pattern, $mobile)) {
-      $errors['mobile'] = "mobile must be of 10 characters long.";
+      $errors['mobile'] = "Mobile must be of 10 characters long.";
     } else {
       $mobile =  $_POST['mobile'];
     }
@@ -123,11 +123,11 @@ if (isset($_POST['submit'])) {
     }
   }
   if (empty($_POST['retype'])) {
-    $errors['retype'] = 'Please Retype Password Again.';
+    $errors['retype'] = 'Confirmation of password is required.';
   } else {
     $retype = $_POST['retype'];
     if ($retype != $password) {
-      $errors['retype'] = 'Password not match';
+      $errors['retype'] = 'Not matched with password';
     } else {
       $password = md5($password);
     }
@@ -254,13 +254,13 @@ if (isset($_POST['submit'])) {
         <ul>
           <li><a href="" class="dashboard">Dashboard</a></li>
           <li><a href="" class="user">Users</a>
-            <ul class="submenu">
+            <!-- <ul class="submenu">
               <li><a href="">Mange Users</a></li>
 
-            </ul>
+            </ul> -->
 
           </li>
-          <li><a href="" class="Setting">Setting</a>
+          <!-- <li><a href="" class="Setting">Setting</a>
             <ul class="submenu">
               <li><a href="">Chnage Password</a></li>
               <li><a href="">Mange Contact Request</a></li>
@@ -274,21 +274,23 @@ if (isset($_POST['submit'])) {
               <li><a href="">Payment Settings</a></li>
               <li><a href="">Manage Email Content</a></li>
               <li><a href="#">Manage Limits</a></li>
-            </ul>
+            </ul> -->
 
           </li>
         </ul>
       </div>
       <div class="right_side_content">
         <h1>Add Users</h1>
-        <?php
-        if (!empty($errors)) {
-          echo "<div class='error-message-div error-msg'><img src='../images/unsucess-msg.png'><strong>Error!</strong> Fields are not filled</div>";
-        }
-        ?>
+
+        
 
         <div class="list-contet">
-          <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png"><strong>Error!</strong> Fields are not filled </div>
+        <?php
+        if (!empty($errors)) {
+          echo "<div class='error-message-div error-msg'><img src='../images/unsucess-msg.png'>Enter Valid Details</div>";
+        }
+        ?>
+          <div class="error-message-div error-msg" id="msg" style="display:none;"><img src="../images/unsucess-msg.png">Enter Valid Details</div>
 
           <!-- form for insert data -->
 
@@ -467,10 +469,10 @@ if (isset($_POST['submit'])) {
             <!--Retype password -->
             <div class="form-row">
               <div class="form-label">
-                <label>Retype Password: <span>*</span></label>
+                <label>Confirm Password: <span>*</span></label>
               </div>
               <div class="input-field">
-                <input type="password" class="search-box" name="retype" placeholder="Re-type Password" id="retype" value="<?php echo $retype; ?>" />
+                <input type="password" class="search-box" name="retype" placeholder="Confirm Password" id="retype" value="<?php echo $retype; ?>" />
                 <p id='retype-error' class='error'><?php echo (isset($errors['retype'])) ? $errors['retype'] : ''; ?></p>
               </div>
             </div>
@@ -664,6 +666,7 @@ if (isset($_POST['submit'])) {
 
     // js validations
     function validateForm() {
+      // return true;
       var isValid = true;
 
       var myform = document.getElementById("myform");
@@ -717,7 +720,7 @@ if (isset($_POST['submit'])) {
         document.getElementById("email-error").innerText = "Email is required.";
         isValid = false;
       } else if (!email.match(emailPattern)) {
-        document.getElementById("email-error").innerText = "Please enter a valid email address.";
+        document.getElementById("email-error").innerText = "Enter valid email.";
         isValid = false;
       }
 
@@ -725,7 +728,7 @@ if (isset($_POST['submit'])) {
         document.getElementById("mobile-error").innerText = "Mobile is required.";
         isValid = false;
       } else if (!mobile.match(mobilePattern)) {
-        document.getElementById("mobile-error").innerText = "mobile must be correctly filled";
+        document.getElementById("mobile-error").innerText = "Mobile must be correctly filled.";
         isValid = false;
       }
 
@@ -757,15 +760,15 @@ if (isset($_POST['submit'])) {
         document.getElementById("password-error").innerText = "Password is required.";
         isValid = false;
       } else if (!password.match(passwordPattern)) {
-        document.getElementById("password-error").innerText = "Password must fulfill all conditions";
+        document.getElementById("password-error").innerText = "Password must fulfill all conditions.";
         isValid = false;
       }
 
       if (retype == "") {
-        document.getElementById("retype-error").innerText = " Confirmation of password is required.";
+        document.getElementById("retype-error").innerText = "Confirmation of password is required.";
         isValid = false;
       } else if (retype != password) {
-        document.getElementById("retype-error").innerText = "It is not matched with above written password ";
+        document.getElementById("retype-error").innerText = "Not matched with password.";
         isValid = false;
       }
 

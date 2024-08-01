@@ -33,7 +33,7 @@ function handlePostRequest() {
 
         while ($row = $result1->fetch_assoc()) {
             $arr[] = [
-                'id' => $row['id'],
+                'id' => $row['state_id'],
                 'cntry_id' => $row['country_id'],
                 'state_name' => $row['state_name'],
             ];

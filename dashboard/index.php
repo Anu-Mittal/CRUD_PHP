@@ -42,8 +42,7 @@ switch ($grp) {
 		break;
 	default:
 		$timeFilter = "";
-
-	}
+}
 // Queries for graph
 //for weeks
 $week4 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $time-(60*60*24*7) AND $time $timeFilter";
@@ -91,13 +90,39 @@ $day7 = "SELECT * FROM em_users  WHERE user_isDeleted = 0 AND user_createdAt BET
 $r7 = mysqli_query($con, $day7);
 $d7 = mysqli_num_rows($r7);
 
+//queries for 1 day 
+$day_time = strtotime('today midnight');
+$time1 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $day_time AND $day_time+(60*60*4) $timeFilter";
+$rslt1 = mysqli_query($con, $time1);
+$t1 = mysqli_num_rows($rslt1);
+
+$time2 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $day_time+(60*60*4) AND $day_time+(60*60*8) $timeFilter";
+$rslt2 = mysqli_query($con, $time2);
+$t2 = mysqli_num_rows($rslt2);
+
+$time3 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $day_time+(60*60*8) AND $day_time+(60*60*12) $timeFilter";
+$rslt3 = mysqli_query($con, $time3);
+$t3 = mysqli_num_rows($rslt3);
+
+$time4 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $day_time+(60*60*12) AND $day_time+(60*60*16) $timeFilter";
+$rslt4 = mysqli_query($con, $time4);
+$t4 = mysqli_num_rows($rslt4);
+
+$time5 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $day_time+(60*60*16) AND $day_time+(60*60*20) $timeFilter";
+$rslt5 = mysqli_query($con, $time5);
+$t5 = mysqli_num_rows($rslt5);
+
+$time6 = "SELECT * FROM em_users WHERE user_isDeleted = 0 AND user_createdAt BETWEEN $day_time+(60*60*20) AND $day_time+(60*60*24) $timeFilter";
+$rslt6 = mysqli_query($con, $time6);
+$t6 = mysqli_num_rows($rslt6);
+
 
 // Queries for pie chart
-$male = "SELECT * FROM em_users  WHERE gender='male' $timeFilter";
-$result5 = mysqli_query($con , $male);
+$male = "SELECT * FROM em_users  WHERE user_gender = 'male' $timeFilter";
+$result5 = mysqli_query($con, $male);
 $m = mysqli_num_rows($result5);
 
-$female = "SELECT * FROM em_users  WHERE gender='female' $timeFilter";
+$female = "SELECT * FROM em_users  WHERE user_gender='female' $timeFilter";
 $result6 = mysqli_query($con, $female);
 $f = mysqli_num_rows($result6);
 
@@ -365,15 +390,15 @@ $f = mysqli_num_rows($result6);
 		<div class="wrapper">
 			<div class="left_sidebr">
 				<ul>
-					<li><a href="../dashboard" class="dashboard">Dashboard</a></li>
-					<li><a href="../listusers" class="user">Users</a>
-						<ul class="submenu">
+					<li id="left_dashboard"><a href="../dashboard" class="dashboard">Dashboard</a></li>
+					<li id="left_user"><a href="../listusers" class="user">Users</a>
+						<!-- <ul class="submenu">
 							<li><a href="">Mange Users</a></li>
 
-						</ul>
+						</ul> -->
 
 					</li>
-					<li><a href="" class="Setting">Setting</a>
+					<!-- <li><a href="" class="Setting">Setting</a>
 						<ul class="submenu">
 							<li><a href="">Chnage Password</a></li>
 							<li><a href="">Mange Contact Request</a></li>
@@ -389,7 +414,7 @@ $f = mysqli_num_rows($result6);
 							<li><a href="#">Manage Limits</a></li>
 						</ul>
 
-					</li>
+					</li> -->
 				</ul>
 			</div>
 			<div class="right_side_content">
@@ -546,12 +571,42 @@ $f = mysqli_num_rows($result6);
 				];
 			} else if (grp === "day") {
 				return [{
-					week: " Today",
-					visitors: <?php echo $w4 ?>
-				}, ];
+						week: "12:00 - 4:00 a.m.",
+						visitors: <?php echo $t1 ?>
+					},
+					{
+						week: "4:00 - 8:00 a.m.",
+						visitors: <?php echo $t2 ?>
+					},
+					{
+						week: "8:00 - 12:00 p.m.",
+						visitors: <?php echo $t3 ?>
+					},
+					{
+						week: "12:00 - 4:00 p.m.",
+						visitors: <?php echo $t4 ?>
+					},
+					{
+						week: "4:00 - 8:00 p.m.",
+						visitors: <?php echo $t5 ?>
+					},
+					{
+						week: "8:00 - 12:00 a.m.",
+						visitors: <?php echo $t6 ?>
+					},
+
+
+
+				];
 
 			}
 		}
+
+		/*     *****************************
+
+		
+
+		    *********************************** */
 
 		function formatNumber(value) {
 			return `${(value)}`;
@@ -649,9 +704,30 @@ $f = mysqli_num_rows($result6);
 				},
 			]
 			const data1 = [{
-				Weeks: "Today",
-				Users: <?php echo $w4 ?>
-			}]
+					Weeks: "12:00 - 4:00 a.m.",
+					Users: <?php echo $t1 ?>
+				},
+				{
+					Weeks: "4:00 - 8:00 a.m.",
+					Users: <?php echo $t2 ?>
+				},
+				{
+					Weeks: "8:00 - 12:00 p.m.",
+					Users: <?php echo $t3 ?>
+				},
+				{
+					Weeks: "12:00 - 4:00 p.m.",
+					Users: <?php echo $t4 ?>
+				},
+				{
+					Weeks: "4:00 - 8:00 p.m.",
+					Users: <?php echo $t5 ?>
+				},
+				{
+					Weeks: "8:00 - 12:00 a.m.",
+					Users: <?php echo $t6 ?>
+				},
+			]
 			const data2 = [{
 					Weeks: " Day 1",
 					Users: <?php echo $d1 ?>
@@ -693,7 +769,7 @@ $f = mysqli_num_rows($result6);
 				return data2;
 
 			}
-		
+
 		}
 
 
@@ -714,7 +790,7 @@ $f = mysqli_num_rows($result6);
 		// 			Users: 
 		// 		},
 		// 	]
-	
+
 		// return data;
 		// }
 
