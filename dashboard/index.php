@@ -859,7 +859,7 @@ $f = mysqli_num_rows($result6);
 		function updateCharts() {
 			const value = document.getElementById("chartFilter").value
 			console.log("here", value);
-			window.location.href = "http://localhost/crud_design/dashboard/?grp=" + value
+			window.location.href = "http://localhost/employee_management/dashboard/?grp=" + value
 		}
 	</script>
 

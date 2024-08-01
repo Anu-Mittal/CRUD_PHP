@@ -88,7 +88,7 @@ function send_mail($get_name, $get_email, $token)
         <div class='content'>
             <p>Hello $get_name</p>
             <p style='font-size:14px; margin-bottom: 30px;'>You requested a password reset for your account. Click the button below to reset your password:</p>
-            <a href='localhost/crud_design/password-change.php?t=$token' class='button'>Reset Password</a>
+            <a href='localhost/employee_management/password-change.php?t=$token' class='button'>Reset Password</a>
             <p style='font-size:14px; margin-top: 30px;''>If you did not request this, please ignore this email.</p>
             <p>Thank you.</p>
         </div>

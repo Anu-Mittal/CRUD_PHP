@@ -64,7 +64,7 @@ if (isset($_POST['submit'])) {
             $body = $row['template_body'];
 
             $body = str_replace("{{name}}", $name, $body);
-            $link = "localhost/crud_design/passwordchange?t=$token&uid=$id";
+            $link = "localhost/employee_management/passwordchange?t=$token&uid=$id";
 
             $body = str_replace("{{url}}", $link, $body);
 

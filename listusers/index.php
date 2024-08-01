@@ -349,7 +349,7 @@ if (!empty($search)) {
 	<script>
 		function sortSelect() {
 			var getname = document.getElementById('sortbyname').value;
-			window.location.href = "http://localhost/crud_design/listusers?page=<?php echo $page; ?>&sort=" + getname + "&order=<?php echo $sort_column == 'getname' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>";
+			window.location.href = "http://localhost/employee_management/listusers?page=<?php echo $page; ?>&sort=" + getname + "&order=<?php echo $sort_column == 'getname' && $sort_order == 'ASC' ? 'desc' : 'asc'; ?>&search=<?php echo htmlspecialchars($search); ?>";
 		}
 		//FOR DELETE CONFIRMATION
 		function myFunction(id) {
